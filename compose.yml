@@ -1,0 +1,168 @@
+
+
+services:
+
+  so1:
+    networks:
+      splunknet:
+      minionet:
+    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
+    platform: linux/amd64
+    hostname: so1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_STANDALONE_URL=so1
+      - SPLUNK_PASSWORD
+    ports:
+      - 8000:8000
+      - 8089:8089
+      - 9997
+
+  so1-init:
+    networks:
+      splunknet:
+      minionet:
+    image: alpine/curl
+    platform: linux/amd64
+    environment:
+      - SPLUNK_PASSWORD
+      - INGEST_ACTION_DESTINATION
+      - INGEST_ACTION_BUCKET
+      - INGEST_ACTION_AK
+      - INGEST_ACTION_SK
+    volumes: 
+      - ./scripts/create-rfs-dest.sh:/create-rfs-dest.sh
+    entrypoint: sh -c "/create-rfs-dest.sh"
+    depends_on:
+      so1:
+        condition: service_healthy
+        restart: true
+
+
+  ds1:
+    networks:
+      splunknet:
+    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
+    platform: linux/amd64
+    hostname: ds1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_ROLE=splunk_deployment_server
+      - SPLUNK_APPS_URL=/opt/my-apps/normal.spl,/opt/my-apps/double-speed.spl,/opt/my-apps/unlimited-speed.spl,/opt/my-apps/forward-to-so1.spl
+      - SPLUNK_STANDALONE_URL=so1
+      - SPLUNK_PASSWORD
+    volumes:
+      - ./serverclass.conf:/opt/splunk/etc/system/local/serverclass.conf
+      - ./my-apps:/opt/my-apps
+    ports:
+      - 8001:8000
+      - 8089
+
+  uf0:
+    networks:
+      splunknet:
+    image: ${UF_IMAGE:-splunk/universalforwarder:latest}
+    platform: linux/amd64
+    hostname: uf0
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_DEPLOYMENT_SERVER=ds1
+      - SPLUNK_ADD=monitor /var/log/*
+      - SPLUNK_PASSWORD
+    ports:
+      - 8089
+      - 9997
+    depends_on:
+      ds1:
+        condition: service_healthy
+        restart: true
+
+  uf1:
+    networks:
+      splunknet:
+    image: ${UF_IMAGE:-splunk/universalforwarder:latest}
+    platform: linux/amd64
+    hostname: uf1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_DEPLOYMENT_SERVER=ds1
+      - SPLUNK_ADD=monitor /var/log/*
+      - SPLUNK_PASSWORD
+    ports:
+      - 8089
+      - 9997
+    depends_on:
+      ds1:
+        condition: service_healthy
+        restart: true
+
+  uf2:
+    networks:
+      splunknet:
+    image: ${UF_IMAGE:-splunk/universalforwarder:latest}
+    platform: linux/amd64
+    hostname: uf2
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_DEPLOYMENT_SERVER=ds1
+      - SPLUNK_ADD=monitor /var/log/*
+      - SPLUNK_PASSWORD
+
+    ports:
+      - 8089
+      - 9997
+    depends_on:
+      ds1:
+        condition: service_healthy
+        restart: true
+
+  minio:
+    networks:
+      minionet:
+    image: minio/minio
+    environment:
+      MINIO_ROOT_USER:
+      MINIO_ROOT_PASSWORD:
+    command: server --console-address ":9001" /data --certs-dir /certs
+    hostname: minio
+    ports:
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-k", "-f", "https://minio:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    volumes:
+      - data:/data
+      - ./certs:/certs
+    restart:
+      always
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio   
+    environment:
+      MINIO_SERVER: ${MINIO_SERVER:-minio}
+      MINIO_BUCKET: ${INGEST_ACTION_BUCKET}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${INGEST_ACTION_AK}
+      AWS_SECRET_ACCESS_KEY: ${INGEST_ACTION_SK}
+    networks:
+      minionet:
+    entrypoint: ./scripts/minio-init.sh
+    volumes:
+      - ./scripts:/scripts:ro
+
+
+networks:
+  splunknet:
+    driver: bridge
+    attachable: true
+  minionet:
+    driver: bridge
+    attachable: true
+
+volumes:
+  data:
