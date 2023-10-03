@@ -56,7 +56,6 @@ Must add to `/opt/splunk/etc/system/local/outputs.conf`
 [rfs]
 sslVerifyServerCert = false
 partitionBy = day, sourcetype
-
 ```
 
 ### props.conf
@@ -74,3 +73,7 @@ RULESET_DESC-ruleset_heure =
 INGEST_EVAL = 'pd:_destinationKey'=if((true()), "rfs:minio", 'pd:_destinationKey')
 STOP_PROCESSING_IF = NOT isnull('pd:_destinationKey') AND 'pd:_destinationKey' != "" AND (isnull('pd:_doRouteClone') OR 'pd:_doRouteClone' == "")
 ```
+
+## Tagging inputs
+
+See community [blog](https://community.splunk.com/t5/Getting-Data-In/Universal-Forwarder-Tag-or-add-identifier-to-data-to-distinguish/m-p/475448)
