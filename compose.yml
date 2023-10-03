@@ -17,6 +17,9 @@ services:
       - 8000:8000
       - 8089:8089
       - 9997
+    volumes:
+      - so1-var:/opt/splunk/var
+      - so1-etc:/opt/splunk/etc
 
   so1-init:
     networks:
@@ -31,8 +34,8 @@ services:
       - INGEST_ACTION_AK
       - INGEST_ACTION_SK
     volumes: 
-      - ./scripts/create-rfs-dest.sh:/create-rfs-dest.sh
-    entrypoint: sh -c "/create-rfs-dest.sh"
+      - ./scripts/:/scripts/
+    entrypoint: sh -c "/scripts/create-rfs-dest.sh"
     depends_on:
       so1:
         condition: service_healthy
@@ -67,7 +70,7 @@ services:
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_DEPLOYMENT_SERVER=ds1
-      - SPLUNK_ADD=monitor /var/log/*
+      - SPLUNK_ADD=monitor /var/log/*, monitor /home/splunk/*
       - SPLUNK_PASSWORD
     ports:
       - 8089
@@ -105,7 +108,6 @@ services:
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_DEPLOYMENT_SERVER=ds1
-      - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
 
     ports:
@@ -120,6 +122,7 @@ services:
     networks:
       minionet:
     image: minio/minio
+    platform: linux/amd64
     environment:
       MINIO_ROOT_USER:
       MINIO_ROOT_PASSWORD:
@@ -133,15 +136,14 @@ services:
       timeout: 20s
       retries: 3
     volumes:
-      - data:/data
+      - minio-data:/data
       - ./certs:/certs
     restart:
       always
 
   minio-init:
     image: minio/mc
-    depends_on:
-      - minio   
+    platform: linux/amd64
     environment:
       MINIO_SERVER: ${MINIO_SERVER:-minio}
       MINIO_BUCKET: ${INGEST_ACTION_BUCKET}
@@ -154,6 +156,10 @@ services:
     entrypoint: ./scripts/minio-init.sh
     volumes:
       - ./scripts:/scripts:ro
+    depends_on:
+      minio:
+        condition: service_healthy
+        restart: true
 
 
 networks:
@@ -165,4 +171,6 @@ networks:
     attachable: true
 
 volumes:
-  data:
+  so1-var:
+  so1-etc:
+  minio-data:
