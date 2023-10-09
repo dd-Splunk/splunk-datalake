@@ -27,12 +27,13 @@ and put `private.key` and `public.crt` in `./certs/` directory
 ## To Do
 
 - [x] Apps to throttle UF
+- [x] Generate Data for each UF
 - [x] Secure Minio
 - [x] Configure S3 as destination
+- [x] Configure SmartStore
+- [ ] Define sourcetype `heure`
 - [ ] Create Tiered Index types
-- [ ] Configure SmartStore
-- [ ] Set Up Ingest actions for each source
-- [ ] Generate Data for each UF
+- [ ] Set Up Ingest actions for each customer
 - [ ] etc ..
 
 ## References
