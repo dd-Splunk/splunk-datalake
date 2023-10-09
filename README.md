@@ -31,7 +31,9 @@ and put `private.key` and `public.crt` in `./certs/` directory
 - [x] Secure Minio
 - [x] Configure S3 as destination
 - [x] Configure SmartStore
+- [ ] Create app DataLake
 - [ ] Define sourcetype `heure`
+- [ ] Create Viz with count by `cust` and count by individual uf
 - [ ] Create Tiered Index types
 - [ ] Set Up Ingest actions for each customer
 - [ ] Use yml to deploy apps on ds1 instead of environment variables
