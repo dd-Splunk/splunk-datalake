@@ -32,6 +32,7 @@ and put `private.key` and `public.crt` in `./certs/` directory
 - [x] Configure S3 as smartstore destination
 - [x] Create Tiered Index types
 - [x] Configure SmartStore for each indexes
+- [ ] Review `outputs.conf` in `forward-to-so1`
 - [ ] Create app DataLake
 - [x] Define sourcetype `heure`
 - [ ] Create Viz with count by `cust` and count by individual uf

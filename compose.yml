@@ -37,8 +37,8 @@ services:
       - SPLUNK_PASSWORD
       - TZ
     volumes:
-      - ./ds1.yml:/tmp/defaults/default.yml
-      - ./configs/my-apps:/opt/my-apps
+      - ./configs/ds1.yml:/tmp/defaults/default.yml
+      - ./my-apps:/opt/my-apps
     ports:
       - 8001:8000
       - 8089
