@@ -57,7 +57,8 @@ services:
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
     volumes:
-      - ./serverclass.conf:/opt/splunk/etc/system/local/serverclass.conf
+      # - ./serverclass.conf:/opt/splunk/etc/system/local/serverclass.conf
+      - ./serverclass.yml:/tmp/defaults/default.yml
       - ./my-apps:/opt/my-apps
     ports:
       - 8001:8000
