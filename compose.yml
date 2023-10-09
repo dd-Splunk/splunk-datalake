@@ -13,6 +13,7 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
+      - TZ
     ports:
       - 8000:8000
       - 8089:8089
@@ -21,28 +22,6 @@ services:
       - so1-var:/opt/splunk/var
       - so1-etc:/opt/splunk/etc
       - ./default.yml:/tmp/defaults/default.yml
-
-
-  # so1-init:
-  #   networks:
-  #     splunknet:
-  #     minionet:
-  #   image: alpine/curl
-  #   platform: linux/amd64
-  #   environment:
-  #     - SPLUNK_PASSWORD
-  #     - INGEST_ACTION_DESTINATION
-  #     - INGEST_ACTION_BUCKET
-  #     - INGEST_ACTION_AK
-  #     - INGEST_ACTION_SK
-  #   volumes: 
-  #     - ./scripts/:/scripts/
-  #   entrypoint: sh -c "/scripts/create-rfs-dest.sh"
-  #   depends_on:
-  #     so1:
-  #       condition: service_healthy
-  #       restart: true
-
 
   ds1:
     networks:
@@ -56,6 +35,7 @@ services:
       - SPLUNK_APPS_URL=/opt/my-apps/normal.spl,/opt/my-apps/double-speed.spl,/opt/my-apps/unlimited-speed.spl,/opt/my-apps/forward-to-so1.spl
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
+      - TZ
     volumes:
       - ./serverclass.yml:/tmp/defaults/default.yml
       - ./my-apps:/opt/my-apps
@@ -74,6 +54,7 @@ services:
       - SPLUNK_DEPLOYMENT_SERVER=ds1
       - SPLUNK_ADD=monitor /var/log/*, monitor /home/splunk/*
       - SPLUNK_PASSWORD
+      - TZ
     ports:
       - 8089
       - 9997
@@ -93,6 +74,7 @@ services:
       - SPLUNK_DEPLOYMENT_SERVER=ds1
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
+      - TZ
     ports:
       - 8089
       - 9997
@@ -111,6 +93,7 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_DEPLOYMENT_SERVER=ds1
       - SPLUNK_PASSWORD
+      - TZ
 
     ports:
       - 8089
@@ -128,6 +111,7 @@ services:
     environment:
       MINIO_ROOT_USER:
       MINIO_ROOT_PASSWORD:
+      TZ:
     command: server --console-address ":9001" /data --certs-dir /certs
     hostname: minio
     ports:
@@ -153,6 +137,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       AWS_ACCESS_KEY_ID: ${INGEST_ACTION_AK}
       AWS_SECRET_ACCESS_KEY: ${INGEST_ACTION_SK}
+      TZ:
     networks:
       minionet:
     entrypoint: ./scripts/minio-init.sh
