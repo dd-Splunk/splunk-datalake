@@ -21,7 +21,7 @@ services:
     volumes:
       - so1-var:/opt/splunk/var
       - so1-etc:/opt/splunk/etc
-      - ./default.yml:/tmp/defaults/default.yml
+      - ./so1.yml:/tmp/defaults/default.yml
 
   ds1:
     networks:
@@ -37,7 +37,7 @@ services:
       - SPLUNK_PASSWORD
       - TZ
     volumes:
-      - ./serverclass.yml:/tmp/defaults/default.yml
+      - ./ds1.yml:/tmp/defaults/default.yml
       - ./my-apps:/opt/my-apps
     ports:
       - 8001:8000
