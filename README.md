@@ -34,6 +34,7 @@ and put `private.key` and `public.crt` in `./certs/` directory
 - [ ] Define sourcetype `heure`
 - [ ] Create Tiered Index types
 - [ ] Set Up Ingest actions for each customer
+- [ ] Use yml to deploy apps on ds1 instead of environment variables
 - [ ] etc ..
 
 ## References
