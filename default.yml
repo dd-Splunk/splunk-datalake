@@ -1,0 +1,40 @@
+splunk:
+  conf:
+    outputs:
+      directory: /opt/splunk/etc/apps/splunk_ingest_actions/local/
+      content:
+        rfs:minio::
+          format: ndjson
+          path: s3://compliancy-bucket/
+          remote.s3.endpoint: https://minio:9000
+          remote.s3.access_key: L4iTAngnHaoIjHnXiJz4
+          remote.s3.secret_key: nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR
+          remote.s3.signature_version: v2
+          remote.s3.sslVerifyServerCert: false
+    indexes:
+      directory: /opt/splunk/etc/apps/search/local/
+      content:
+        volume:minio01_smart-bucket:
+          storageType: remote
+          path: s3://smart-bucket
+          remote.s3.endpoint: https://minio:9000
+          remote.s3.access_key: L4iTAngnHaoIjHnXiJz4
+          remote.s3.secret_key: nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR
+          remote.s3.signature_version: v2
+          remote.s3.use_delimiter: false
+          remote.s3.sslVerifyServerCert: false
+        cust0:
+          remotePath: volume:minio01_smart-bucket/cust0
+          homePath: $SPLUNK_DB/cust0/db
+          coldPath: $SPLUNK_DB/cust0/colddb
+          thawedPath: $SPLUNK_DB/cust0/thaweddb
+        cust1:
+          remotePath: volume:minio01_smart-bucket/cust1
+          homePath: $SPLUNK_DB/cust1/db
+          coldPath: $SPLUNK_DB/cust1/colddb
+          thawedPath: $SPLUNK_DB/cust1/thaweddb
+        cust2:
+          remotePath: volume:minio01_smart-bucket/cust2
+          homePath: $SPLUNK_DB/cust2/db
+          coldPath: $SPLUNK_DB/cust2/colddb
+          thawedPath: $SPLUNK_DB/cust2/thaweddb

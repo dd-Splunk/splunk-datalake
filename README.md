@@ -77,3 +77,19 @@ STOP_PROCESSING_IF = NOT isnull('pd:_destinationKey') AND 'pd:_destinationKey' !
 ## Tagging inputs
 
 See community [blog](https://community.splunk.com/t5/Getting-Data-In/Universal-Forwarder-Tag-or-add-identifier-to-data-to-distinguish/m-p/475448)
+
+## Create dummy data
+
+index=_internal | head 10 | summaryindex spool=t uselb=t addtime=t index="cust0"
+
+## Roll the buckets
+
+docker compose exec -it so1 /opt/splunk/bin/splunk _internal call /data/indexes/cust0/roll-hot-buckets -auth admin:Password$
+
+## Check the rolling
+
+index=_internal component=HotBucketRoller
+
+## Check the upload to Smartstore
+
+index=_internal component=CacheManager TERM(action=upload)

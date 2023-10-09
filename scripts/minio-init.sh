@@ -25,7 +25,9 @@ mc admin user --insecure  svcacct add       \
 
 # Create bucket 
 mc mb --insecure ${ALIAS}/${MINIO_BUCKET}
-mc mb --insecure ${ALIAS}/vol01
+mc mb --insecure ${ALIAS}/smart-bucket
+mc policy --insecure public ${ALIAS}/s{MINIO_BUCKET}
+mc policy --insecure public ${ALIAS}/smart-bucket
 
 set -o history 
 exit 0

@@ -20,26 +20,28 @@ services:
     volumes:
       - so1-var:/opt/splunk/var
       - so1-etc:/opt/splunk/etc
+      - ./default.yml:/tmp/defaults/default.yml
 
-  so1-init:
-    networks:
-      splunknet:
-      minionet:
-    image: alpine/curl
-    platform: linux/amd64
-    environment:
-      - SPLUNK_PASSWORD
-      - INGEST_ACTION_DESTINATION
-      - INGEST_ACTION_BUCKET
-      - INGEST_ACTION_AK
-      - INGEST_ACTION_SK
-    volumes: 
-      - ./scripts/:/scripts/
-    entrypoint: sh -c "/scripts/create-rfs-dest.sh"
-    depends_on:
-      so1:
-        condition: service_healthy
-        restart: true
+
+  # so1-init:
+  #   networks:
+  #     splunknet:
+  #     minionet:
+  #   image: alpine/curl
+  #   platform: linux/amd64
+  #   environment:
+  #     - SPLUNK_PASSWORD
+  #     - INGEST_ACTION_DESTINATION
+  #     - INGEST_ACTION_BUCKET
+  #     - INGEST_ACTION_AK
+  #     - INGEST_ACTION_SK
+  #   volumes: 
+  #     - ./scripts/:/scripts/
+  #   entrypoint: sh -c "/scripts/create-rfs-dest.sh"
+  #   depends_on:
+  #     so1:
+  #       condition: service_healthy
+  #       restart: true
 
 
   ds1:
