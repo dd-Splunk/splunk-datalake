@@ -17,16 +17,19 @@ splunk:
           homePath: $SPLUNK_DB/cust0/db
           coldPath: $SPLUNK_DB/cust0/colddb
           thawedPath: $SPLUNK_DB/cust0/thaweddb
+          maxHotBuckets: 1
         cust1:
           remotePath: volume:minio01_smart-bucket/cust1
           homePath: $SPLUNK_DB/cust1/db
           coldPath: $SPLUNK_DB/cust1/colddb
           thawedPath: $SPLUNK_DB/cust1/thaweddb
+          maxHotBuckets: 1
         cust2:
           remotePath: volume:minio01_smart-bucket/cust2
           homePath: $SPLUNK_DB/cust2/db
           coldPath: $SPLUNK_DB/cust2/colddb
           thawedPath: $SPLUNK_DB/cust2/thaweddb
+          maxHotBuckets: 1
     props:
       directory: /opt/splunk/etc/apps/search/local/
       content:
@@ -38,8 +41,33 @@ splunk:
           description: Generated hour
           pulldown_type: 1
           EXTRACT-cust_hour: ^^=\n*=\s+(?P<cust_hour>.+)
+          RULESET-ruleset_heure: _rule:ruleset_heure:set_index:eval:izyqr63k _rule:ruleset_heure:set_index:eval:iw5pg0nc _rule:ruleset_heure:set_index:eval:ii13mzca
+          RULESET_DESC-ruleset_heure: Tag based routing
+ 
+    transforms:
+      directory: /opt/splunk/etc/apps/search/local/
+      content:
+        _rule:ruleset_heure:set_index:eval:ii13mzca:
+          INGEST_EVAL: index=if((host=="uf2"), "cust2", index)
+        _rule:ruleset_heure:set_index:eval:iw5pg0nc:
+          INGEST_EVAL: index=if((host=="uf1"), "cust1", index)
+        _rule:ruleset_heure:set_index:eval:izyqr63k:
+          INGEST_EVAL: index=if((host=="uf0"), "cust0", index)
+ 
     fields:
       directory: /opt/splunk/etc/apps/search/local/
       content:
         cust:
-          INDEXED: true             
+          INDEXED: true
+
+    outputs:
+      directory: /opt/splunk/etc/apps/splunk_ingest_actions/local/
+      content:
+        rfs:minio::
+          format: ndjson
+          path: s3://compliancy-bucket/
+          remote.s3.endpoint: https://minio:9000
+          remote.s3.access_key: L4iTAngnHaoIjHnXiJz4
+          remote.s3.secret_key: nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR
+          remote.s3.signature_version: v2
+          remote.s3.sslVerifyServerCert: false
