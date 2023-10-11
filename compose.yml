@@ -16,8 +16,6 @@ services:
       - TZ
     ports:
       - 8000:8000
-      - 8089:8089
-      - 9997
     volumes:
       - so1-var:/opt/splunk/var
       - so1-etc:/opt/splunk/etc
@@ -41,7 +39,6 @@ services:
       - ./my-apps:/opt/my-apps
     ports:
       - 8001:8000
-      - 8089
 
   uf0:
     networks:
@@ -54,9 +51,6 @@ services:
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
       - TZ
-    ports:
-      - 8089
-      - 9997
     volumes:
       - ./configs/uf.yml:/tmp/defaults/default.yml
     depends_on:
@@ -75,9 +69,6 @@ services:
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
       - TZ
-    ports:
-      - 8089
-      - 9997
     volumes:
       - ./configs/uf.yml:/tmp/defaults/default.yml
     depends_on:
@@ -96,9 +87,6 @@ services:
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
       - TZ
-    ports:
-      - 8089
-      - 9997
     volumes:
       - ./configs/uf.yml:/tmp/defaults/default.yml
     depends_on:
@@ -117,8 +105,6 @@ services:
       TZ:
     command: server --console-address ":9001" /data --certs-dir /certs
     hostname: minio
-    ports:
-      - "9001:9001"
     healthcheck:
       test: ["CMD", "curl", "-k", "-f", "https://minio:9000/minio/health/live"]
       interval: 30s
@@ -127,6 +113,8 @@ services:
     volumes:
       - minio-data:/data
       - ./certs:/certs
+    ports:
+      - 9001:9001
     restart:
       always
 
@@ -140,7 +128,6 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       AWS_ACCESS_KEY_ID: ${INGEST_ACTION_AK}
       AWS_SECRET_ACCESS_KEY: ${INGEST_ACTION_SK}
-      TZ:
     networks:
       minionet:
     entrypoint: ./scripts/minio-init.sh
