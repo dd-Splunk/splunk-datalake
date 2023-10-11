@@ -11,4 +11,11 @@ splunk:
           server: so1:9997
         tcpout-server://so1:9997:
           disabled: false
+    deploymentclient:
+      directory: /opt/splunkforwarder/etc/system/local/
+      content:
+        target-broker:deploymentServer:
+          targetUri: ds1:8089
+
+
 

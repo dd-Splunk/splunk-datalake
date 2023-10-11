@@ -51,8 +51,7 @@ services:
     hostname: uf0
     environment:
       - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_DEPLOYMENT_SERVER=ds1
-      - SPLUNK_ADD=monitor /var/log/*, monitor /home/splunk/*
+      - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
       - TZ
     ports:
@@ -73,7 +72,6 @@ services:
     hostname: uf1
     environment:
       - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_DEPLOYMENT_SERVER=ds1
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
       - TZ
@@ -95,7 +93,7 @@ services:
     hostname: uf2
     environment:
       - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_DEPLOYMENT_SERVER=ds1
+      - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
       - TZ
     ports:
