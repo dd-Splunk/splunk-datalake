@@ -1,0 +1,14 @@
+splunk:
+  conf:
+    outputs:
+      directory: /opt/splunkforwarder/etc/system/local/
+      content:
+        indexAndForward:
+          index: false
+        tcpout:
+          defaultGroup: default-autolb-group
+        tcpout:default-autolb-group:
+          server: so1:9997
+        tcpout-server://so1:9997:
+          disabled: false
+

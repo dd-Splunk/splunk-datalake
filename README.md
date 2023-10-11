@@ -38,6 +38,7 @@ and put `private.key` and `public.crt` in `./certs/` directory
 - [x] Define sourcetype `heure`
 - [ ] Create Viz with count by `cust` and count by individual uf
 - [ ] Set Up Ingest actions for each customer
+- [x] Use yml to configure forward-server on uf*
 - [ ] Use yml to deploy apps on ds1 instead of environment variables
 - [ ] etc ..
 

@@ -32,7 +32,7 @@ services:
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_ROLE=splunk_deployment_server
-      - SPLUNK_APPS_URL=/opt/my-apps/normal.spl,/opt/my-apps/double-speed.spl,/opt/my-apps/unlimited-speed.spl,/opt/my-apps/forward-to-so1.spl
+      - SPLUNK_APPS_URL=/opt/my-apps/normal.spl,/opt/my-apps/double-speed.spl,/opt/my-apps/unlimited-speed.spl
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
       - TZ
@@ -58,6 +58,8 @@ services:
     ports:
       - 8089
       - 9997
+    volumes:
+      - ./configs/uf.yml:/tmp/defaults/default.yml
     depends_on:
       ds1:
         condition: service_healthy
@@ -78,6 +80,8 @@ services:
     ports:
       - 8089
       - 9997
+    volumes:
+      - ./configs/uf.yml:/tmp/defaults/default.yml
     depends_on:
       ds1:
         condition: service_healthy
@@ -94,10 +98,11 @@ services:
       - SPLUNK_DEPLOYMENT_SERVER=ds1
       - SPLUNK_PASSWORD
       - TZ
-
     ports:
       - 8089
       - 9997
+    volumes:
+      - ./configs/uf.yml:/tmp/defaults/default.yml
     depends_on:
       ds1:
         condition: service_healthy
