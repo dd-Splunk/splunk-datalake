@@ -1,2 +1,2 @@
-*.spl
+my-apps/*.spl
 .env
