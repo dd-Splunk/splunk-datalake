@@ -40,13 +40,18 @@ splunk:
           category: Custom
           description: Generated hour
           pulldown_type: 1
-          EXTRACT-cust_hour: ^^=\n*=\s+(?P<cust_hour>.+)
+          TRANSFORMS-cust: addcust
           RULESET-ruleset_heure: _rule:ruleset_heure:set_index:eval:izyqr63k _rule:ruleset_heure:set_index:eval:iw5pg0nc _rule:ruleset_heure:set_index:eval:ii13mzca
           RULESET_DESC-ruleset_heure: Tag based routing
  
     transforms:
       directory: /opt/splunk/etc/apps/search/local/
       content:
+        addcust:
+          SOURCE_KEY: cust
+          REGEX: (.*)
+          FORMAT: cust::$1
+          WRITE_META: true
         _rule:ruleset_heure:set_index:eval:ii13mzca:
           INGEST_EVAL: index=if((host=="uf2"), "cust2", index)
         _rule:ruleset_heure:set_index:eval:iw5pg0nc:
