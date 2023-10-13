@@ -43,7 +43,7 @@ and put `private.key` and `public.crt` in `./certs/` directory
 
 - [ ] Create Viz with count by `cust` and count by individual uf
 
-- [ ] Set Up Ingest actions for each customer
+- [x] Set Up Ingest actions for each customer
 - [x] Use yml to configure forward-server on uf*
 - [ ] Use yml to deploy apps on ds1 instead of environment variables
 - [ ] etc ..
@@ -65,32 +65,6 @@ echo "Il est: `date`" >> ~splunk/heure.log
 
 ```bash
 index="_internal" sourcetype="splunkd" (ERROR OR WARN) RfsOutputProcessor OR S3Client
-```
-
-### Destination
-
-Must add to `/opt/splunk/etc/system/local/outputs.conf`
-
-```ini
-[rfs]
-sslVerifyServerCert = false
-partitionBy = day, sourcetype
-```
-
-### props.conf
-
-```ini
-[heure]
-RULESET-ruleset_heure = _rule:ruleset_heure:route:eval:rxdtogbq
-RULESET_DESC-ruleset_heure =
-```
-
-### transforms.conf
-
-```ini
-[_rule:ruleset_heure:route:eval:rxdtogbq]
-INGEST_EVAL = 'pd:_destinationKey'=if((true()), "rfs:minio", 'pd:_destinationKey')
-STOP_PROCESSING_IF = NOT isnull('pd:_destinationKey') AND 'pd:_destinationKey' != "" AND (isnull('pd:_doRouteClone') OR 'pd:_doRouteClone' == "")
 ```
 
 ## Tagging inputs
