@@ -112,4 +112,3 @@ index=_internal component=HotBucketRoller
 ## Check the upload to Smartstore
 
 index=_internal component=CacheManager TERM(action=upload)
-
