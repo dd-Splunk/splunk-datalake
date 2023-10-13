@@ -1,5 +1,9 @@
 # Datalake
 
+## Architecture
+
+![High Level diagram](assets/20231013_110017_CTIE_Datalake - Gneral Setup.png)
+
 ## Compress
 
 ```bash
@@ -36,7 +40,9 @@ and put `private.key` and `public.crt` in `./certs/` directory
 - [x] Review `outputs.conf` in `forward-to-so1`
 - [ ] Create app DataLake
 - [x] Define sourcetype `heure`
-- [ ] Create Viz with count by `cust` and count by individual uf
+
+- [ ] Create Viz with count by `cust` and count by individual uf
+
 - [ ] Set Up Ingest actions for each customer
 - [x] Use yml to configure forward-server on uf*
 - [ ] Use yml to deploy apps on ds1 instead of environment variables
@@ -106,3 +112,4 @@ index=_internal component=HotBucketRoller
 ## Check the upload to Smartstore
 
 index=_internal component=CacheManager TERM(action=upload)
+
