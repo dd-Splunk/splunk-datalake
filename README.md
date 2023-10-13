@@ -2,7 +2,7 @@
 
 ## Architecture
 
-[High Level diagram](assets/20231013_110017_CTIE_Datalake - Gneral Setup.png)
+![Datalake Architecture](assets/datalake.png "Datalake Architecture")
 
 ## Compress
 
