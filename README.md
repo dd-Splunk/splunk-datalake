@@ -2,7 +2,7 @@
 
 ## Architecture
 
-![High Level diagram](assets/20231013_110017_CTIE_Datalake - Gneral Setup.png)
+[High Level diagram](assets/20231013_110017_CTIE_Datalake - Gneral Setup.png)
 
 ## Compress
 
@@ -14,12 +14,6 @@ tar --disable-copyfile -czf unlimited-speed.spl unlimited-speed
 
 ```bash
 sudo /opt/splunkforwarder/bin/splunk btool limits list thruput --debug
-```
-
-## Add so1 to uf
-
-```bash
-sudo /opt/splunkforwarder/bin/splunk add forward-server so1:9997 -auth admin:Password$
 ```
 
 ## Secure Minio
@@ -73,16 +67,24 @@ See community [blog](https://community.splunk.com/t5/Getting-Data-In/Universal-F
 
 ## Create dummy data
 
+```bash
 index=_internal | head 10 | summaryindex spool=t uselb=t addtime=t index="cust0"
+```
 
 ## Roll the buckets
 
+```bash
 docker compose exec -it so1 /opt/splunk/bin/splunk _internal call /data/indexes/cust0/roll-hot-buckets -auth admin:Password$
+```
 
 ## Check the rolling
 
+```bash
 index=_internal component=HotBucketRoller
+```
 
 ## Check the upload to Smartstore
 
+```bash
 index=_internal component=CacheManager TERM(action=upload)
+```
