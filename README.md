@@ -55,7 +55,13 @@ echo "Il est: `date`" >> ~splunk/heure.log
 
 ## Ingest Action Ruleset
 
-## Destination
+### Troubleshoot
+
+```bash
+index="_internal" sourcetype="splunkd" (ERROR OR WARN) RfsOutputProcessor OR S3Client
+```
+
+### Destination
 
 Must add to `/opt/splunk/etc/system/local/outputs.conf`
 

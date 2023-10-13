@@ -68,8 +68,11 @@ splunk:
     outputs:
       directory: /opt/splunk/etc/apps/splunk_ingest_actions/local/
       content:
-        rfs:minio::
+        rfs:
+          partitionBy: day, sourcetype
+          batchSizeThresholdKB: 10
           format: ndjson
+        rfs:minio:
           path: s3://compliancy-bucket/
           remote.s3.endpoint: https://minio:9000
           remote.s3.access_key: L4iTAngnHaoIjHnXiJz4
