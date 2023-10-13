@@ -41,7 +41,7 @@ splunk:
           description: Generated hour
           pulldown_type: 1
           TRANSFORMS-cust: addcust
-          RULESET-ruleset_heure: _rule:ruleset_heure:set_index:eval:izyqr63k _rule:ruleset_heure:set_index:eval:iw5pg0nc _rule:ruleset_heure:set_index:eval:ii13mzca
+          RULESET-ruleset_heure: _rule:ruleset_heure:set_index:eval:izyqr63k _rule:ruleset_heure:set_index:eval:iw5pg0nc _rule:ruleset_heure:set_index:eval:ii13mzca _rule:ruleset_heure:route:eval:r3y487fz
           RULESET_DESC-ruleset_heure: Tag based routing
  
     transforms:
@@ -53,11 +53,14 @@ splunk:
           FORMAT: cust::$1
           WRITE_META: true
         _rule:ruleset_heure:set_index:eval:ii13mzca:
-          INGEST_EVAL: index=if((host=="uf2"), "cust2", index)
+          INGEST_EVAL: index=if((cust=="customer-double"), "cust2", index)
         _rule:ruleset_heure:set_index:eval:iw5pg0nc:
-          INGEST_EVAL: index=if((host=="uf1"), "cust1", index)
+          INGEST_EVAL: index=if((cust=="customer-normal"), "cust1", index)
         _rule:ruleset_heure:set_index:eval:izyqr63k:
-          INGEST_EVAL: index=if((host=="uf0"), "cust0", index)
+          INGEST_EVAL: index=if((cust=="customer-unlimited"), "cust0", index)
+        _rule:ruleset_heure:route:eval:r3y487fz:
+          INGEST_EVAL: pd:_destinationKey=if((true()), "rfs:minio", 'pd:_destinationKey')
+          STOP_PROCESSING_IF: NOT isnull('pd:_destinationKey') AND 'pd:_destinationKey' != "" AND (isnull('pd:_doRouteClone') OR 'pd:_doRouteClone' == "")
  
     fields:
       directory: /opt/splunk/etc/apps/search/local/

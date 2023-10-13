@@ -6,13 +6,10 @@ set +o history
 ALIAS=local
 PROT=https
 
-# Wait for Minio server to be up
-# echo "Waiting for ${MINIO_SERVER} ..."
-# until $(curl --output /dev/null -k --silent --head --fail ${PROT}://${MINIO_SERVER}:9000/minio/health/live ); do
-#     printf '.'
-#     sleep 1
-# done
-# echo "${MINIO_SERVER} is up." 
+# Buckets
+SMART_BUCKET=smart-bucket
+COMPLIANCY_BUCKET=compliancy-bucket
+
 
 # Create alias to local minio
 mc alias set --insecure ${ALIAS} ${PROT}://${MINIO_SERVER}:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
@@ -24,10 +21,10 @@ mc admin user --insecure  svcacct add       \
    ${ALIAS} admin
 
 # Create bucket 
-mc mb --insecure ${ALIAS}/${MINIO_BUCKET}
-mc mb --insecure ${ALIAS}/smart-bucket
-mc policy --insecure public ${ALIAS}/s{MINIO_BUCKET}
-mc policy --insecure public ${ALIAS}/smart-bucket
+mc mb --insecure ${ALIAS}/${SMART_BUCKET}
+mc mb --insecure ${ALIAS}/${COMPLIANCY_BUCKET}
+mc policy --insecure public ${ALIAS}/s{SMART_BUCKET}
+mc policy --insecure public ${ALIAS}/${COMPLIANCY_BUCKET}
 
 set -o history 
 exit 0
