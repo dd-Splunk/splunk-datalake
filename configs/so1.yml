@@ -74,6 +74,7 @@ splunk:
         rfs:
           partitionBy: day, sourcetype
           batchSizeThresholdKB: 10
+          batchTimeout: 60
           format: ndjson
         rfs:minio:
           path: s3://compliancy-bucket/
