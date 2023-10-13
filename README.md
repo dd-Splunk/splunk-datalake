@@ -84,7 +84,7 @@ index=_internal | head 10 | summaryindex spool=t uselb=t addtime=t index="cust0"
 ## Roll the buckets
 
 ```bash
-docker compose exec -it so1 /opt/splunk/bin/splunk _internal call /data/indexes/cust0/roll-hot-buckets -auth admin:Password$
+./scripts/roll.sh
 ```
 
 ## Check the rolling
