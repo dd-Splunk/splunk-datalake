@@ -19,7 +19,7 @@ services:
     volumes:
       # - so1-var:/opt/splunk/var
       # - so1-etc:/opt/splunk/etc
-      - ./configs/so1.yml:/tmp/defaults/default.yml
+      - ./configs/splunk/so1.yml:/tmp/defaults/default.yml
 
   ds1:
     networks:
@@ -35,7 +35,7 @@ services:
       - SPLUNK_PASSWORD
       - TZ
     volumes:
-      - ./configs/ds1.yml:/tmp/defaults/default.yml
+      - ./configs/splunk/ds1.yml:/tmp/defaults/default.yml
       - ./my-apps:/opt/my-apps
     ports:
       - 8001:8000
@@ -52,7 +52,7 @@ services:
       - SPLUNK_PASSWORD
       - TZ
     volumes:
-      - ./configs/uf.yml:/tmp/defaults/default.yml
+      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
     depends_on:
       ds1:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
       - SPLUNK_PASSWORD
       - TZ
     volumes:
-      - ./configs/uf.yml:/tmp/defaults/default.yml
+      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
     depends_on:
       ds1:
         condition: service_healthy
@@ -88,7 +88,7 @@ services:
       - SPLUNK_PASSWORD
       - TZ
     volumes:
-      - ./configs/uf.yml:/tmp/defaults/default.yml
+      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
     depends_on:
       ds1:
         condition: service_healthy
