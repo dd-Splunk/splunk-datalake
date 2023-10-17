@@ -1,2 +1,3 @@
 my-apps/*.spl
 .env
+.DS_Store
