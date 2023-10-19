@@ -10,7 +10,7 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
-      - ${TZ:-Europe/Brussels}
+      - TZ=${TZ:-Europe/Brussels}
     ports:
       - 8000:8000
     volumes:
@@ -27,7 +27,7 @@ services:
       - SPLUNK_ROLE=splunk_deployment_server
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
-      - ${TZ:-Europe/Brussels}
+      - TZ=${TZ:-Europe/Brussels}
     volumes:
       - ./configs/splunk/ds1.yml:/tmp/defaults/default.yml
       - ./deployment-apps:/opt/splunk/etc/deployment-apps
@@ -35,58 +35,22 @@ services:
       - 8001:8000
 
   uf0:
-    networks:
-      splunknet:
-    image: ${UF_IMAGE:-splunk/universalforwarder:latest}
-    platform: linux/amd64
     hostname: uf0
-    environment:
-      - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_ADD=monitor /var/log/*
-      - SPLUNK_PASSWORD
-      - ${TZ:-Europe/Brussels}
-    volumes:
-      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
-    depends_on:
-      ds1:
-        condition: service_healthy
-        restart: true
+    extends:
+      file: include/uf.yml
+      service: uf
 
   uf1:
-    networks:
-      splunknet:
-    image: ${UF_IMAGE:-splunk/universalforwarder:latest}
-    platform: linux/amd64
     hostname: uf1
-    environment:
-      - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_ADD=monitor /var/log/*
-      - SPLUNK_PASSWORD
-      - ${TZ:-Europe/Brussels}
-    volumes:
-      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
-    depends_on:
-      ds1:
-        condition: service_healthy
-        restart: true
+    extends:
+      file: include/uf.yml
+      service: uf
 
   uf2:
-    networks:
-      splunknet:
-    image: ${UF_IMAGE:-splunk/universalforwarder:latest}
-    platform: linux/amd64
     hostname: uf2
-    environment:
-      - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_ADD=monitor /var/log/*
-      - SPLUNK_PASSWORD
-      - ${TZ:-Europe/Brussels}
-    volumes:
-      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
-    depends_on:
-      ds1:
-        condition: service_healthy
-        restart: true
+    extends:
+      file: include/uf.yml
+      service: uf
 
   minio:
     networks:
@@ -96,7 +60,7 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
       MINIO_ROOT_PASSWORD:
-      ${TZ:-Europe/Brussels}:
+      TZ: ${TZ:-Europe/Brussels}
     command: server --console-address ":9001" /data --certs-dir /certs
     hostname: minio
     healthcheck:
@@ -141,6 +105,4 @@ networks:
     attachable: true
 
 volumes:
-  # so1-var:
-  # so1-etc:
   minio-data:

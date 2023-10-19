@@ -1,5 +1,10 @@
 splunk:
   conf:
+    inputs:
+      directory: /opt/splunkforwarder/etc/apps/search/local
+      content:
+        monitor:///var/log/*:
+          disabled: false
     outputs:
       directory: /opt/splunkforwarder/etc/system/local/
       content:

@@ -1,0 +1,16 @@
+services:
+  uf:
+    networks:
+      splunknet:
+    image: ${UF_IMAGE:-splunk/universalforwarder:latest}
+    platform: linux/amd64
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD
+      - TZ=${TZ:-Europe/Brussels}
+    volumes:
+      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
+    depends_on:
+      ds1:
+        condition: service_healthy
+        restart: true
