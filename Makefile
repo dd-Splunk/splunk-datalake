@@ -4,7 +4,7 @@ SHELL := /bin/bash
 
 up:
 	rm -rf ./deployment-apps/README
-	$(DC) up -d ds1
+	$(DC) up -d
 logs:
 	$(DC) logs -f
 down:
