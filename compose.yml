@@ -1,7 +1,4 @@
-
-
 services:
-
   so1:
     networks:
       splunknet:
@@ -13,12 +10,10 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
-      - TZ
+      - ${TZ:-Europe/Brussels}
     ports:
       - 8000:8000
     volumes:
-      # - so1-var:/opt/splunk/var
-      # - so1-etc:/opt/splunk/etc
       - ./configs/splunk/so1.yml:/tmp/defaults/default.yml
 
   ds1:
@@ -30,10 +25,9 @@ services:
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_ROLE=splunk_deployment_server
-      # - SPLUNK_APPS_URL=/opt/my-apps/normal.spl,/opt/my-apps/double-speed.spl,/opt/my-apps/unlimited-speed.spl
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
-      - TZ
+      - ${TZ:-Europe/Brussels}
     volumes:
       - ./configs/splunk/ds1.yml:/tmp/defaults/default.yml
       - ./deployment-apps:/opt/splunk/etc/deployment-apps
@@ -50,7 +44,7 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
-      - TZ
+      - ${TZ:-Europe/Brussels}
     volumes:
       - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
     depends_on:
@@ -68,7 +62,7 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
-      - TZ
+      - ${TZ:-Europe/Brussels}
     volumes:
       - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
     depends_on:
@@ -86,7 +80,7 @@ services:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_ADD=monitor /var/log/*
       - SPLUNK_PASSWORD
-      - TZ
+      - ${TZ:-Europe/Brussels}
     volumes:
       - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
     depends_on:
@@ -102,7 +96,7 @@ services:
     environment:
       MINIO_ROOT_USER:
       MINIO_ROOT_PASSWORD:
-      TZ:
+      ${TZ:-Europe/Brussels}:
     command: server --console-address ":9001" /data --certs-dir /certs
     hostname: minio
     healthcheck:
