@@ -13,5 +13,7 @@ logs:
 	$(DC) logs -f
 down:
 	$(DC) down
+	rm -rf ./deployment-apps/README
 clean:
 	$(DC) down -v
+	rm -rf ./deployment-apps/README
