@@ -13,3 +13,17 @@ All customer indexes are using Smartstore to lower storage footprint.
 ## Architecture
 
 ![Datalake Architecture](assets/datalake.png "Datalake Architecture")
+
+## Startup / Shutdown
+
+To launch the whole config:
+
+```bash
+make up
+```
+
+and to stop it:
+
+```bash
+make down
+```
