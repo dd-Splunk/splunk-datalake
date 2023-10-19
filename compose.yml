@@ -30,13 +30,13 @@ services:
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_ROLE=splunk_deployment_server
-      - SPLUNK_APPS_URL=/opt/my-apps/normal.spl,/opt/my-apps/double-speed.spl,/opt/my-apps/unlimited-speed.spl
+      # - SPLUNK_APPS_URL=/opt/my-apps/normal.spl,/opt/my-apps/double-speed.spl,/opt/my-apps/unlimited-speed.spl
       - SPLUNK_STANDALONE_URL=so1
       - SPLUNK_PASSWORD
       - TZ
     volumes:
       - ./configs/splunk/ds1.yml:/tmp/defaults/default.yml
-      - ./my-apps:/opt/my-apps
+      - ./my-apps:/opt/etc/deployment-apps
     ports:
       - 8001:8000
 
