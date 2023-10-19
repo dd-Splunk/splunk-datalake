@@ -9,7 +9,7 @@ services:
       - SPLUNK_PASSWORD
       - TZ=${TZ:-Europe/Brussels}
     volumes:
-      - ./configs/splunk/uf.yml:/tmp/defaults/default.yml
+      - ../configs/splunk/uf.yml:/tmp/defaults/default.yml
     depends_on:
       ds1:
         condition: service_healthy
