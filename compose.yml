@@ -36,7 +36,7 @@ services:
       - TZ
     volumes:
       - ./configs/splunk/ds1.yml:/tmp/defaults/default.yml
-      - ./my-apps:/opt/etc/deployment-apps
+      - ./deployment-apps:/opt/splunk/etc/deployment-apps
     ports:
       - 8001:8000
 
