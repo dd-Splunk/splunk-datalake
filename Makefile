@@ -1,11 +1,13 @@
-.PHONY: up down clean
+.PHONY: up logs down clean
+DC := docker compose
 SHELL := /bin/bash 
 
 up:
 	rm -rf ./deployment-apps/README
-	docker compose up -d ds1
-
+	$(DC) up -d ds1
+logs:
+	$(DC) logs -f
 down:
-	docker compose down
+	$(DC) down
 clean:
-	docker compose down -v
+	$(DC) down -v
