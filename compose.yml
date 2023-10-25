@@ -16,6 +16,19 @@ services:
       - 8089:8089
     volumes:
       - ./configs/splunk/so1.yml:/tmp/defaults/default.yml
+  
+  so1-init:
+    networks:
+      splunknet:
+      minionet:
+    build: ./configs/docker/
+    platform: linux/amd64  
+    environment:
+      - SPLUNK_PASSWORD
+    depends_on:
+      so1:
+        condition: service_healthy
+        restart: true
 
   ds1:
     networks:
