@@ -24,6 +24,8 @@ services:
     build: ./configs/docker/
     platform: linux/amd64  
     environment:
+      - AK=${INGEST_ACTION_AK}
+      - SK=${INGEST_ACTION_SK}
       - SPLUNK_PASSWORD
     depends_on:
       so1:

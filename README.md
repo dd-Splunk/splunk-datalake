@@ -27,3 +27,9 @@ and to stop it:
 ```bash
 make down
 ```
+
+## Initialisation
+
+All splunk instances are initilised using a `yml` config file.
+
+The `ingest-action` is initilised using a side car container because a at this time of writing the `yml` config  routing to an external destination creates a syntax error.
