@@ -30,6 +30,7 @@ make down
 
 ## Initialisation
 
-All splunk instances are initilised using a `yml` config file.
+All Splunk instances (so1, ds1, uf{0..2}) are initialised using a dedicated `yml` config file.
 
-The `ingest-action` is initilised using a side car container because a at this time of writing the `yml` config  routing to an external destination creates a syntax error.
+Except the `ingest-action`. It is initilised using a sidecar container because at this time of writing,
+ the `yml` config  routing to an external destination creates a syntax error.
