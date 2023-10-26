@@ -1,6 +1,7 @@
 # Datalake
 
-Proof of concept architecture to segregate traffic from various customers.
+Proof of concept architecture to segregate traffic from various customers into dedicated indexes.
+ while avoiding saturation of the main Splunk instance.
 
 Each customer is tagged. Based on the tagging both the throughput and the destination are adjusted.
 
@@ -9,6 +10,8 @@ The troughput and the tagging is set per Unversal Forwarder class.
 The traffic is segregated using ingest actions.
 
 All customer indexes are using Smartstore to lower storage footprint.
+
+For compliancy reasons all tarffic is also sent to a dedicated S3 bucket.
 
 ## Architecture
 
