@@ -77,10 +77,10 @@ splunk:
           batchSizeThresholdKB: 10
           batchTimeout: 60
           format: ndjson
-        rfs:minio:
-          path: s3://compliancy-bucket/
-          remote.s3.endpoint: https://minio:9000
-          remote.s3.access_key: L4iTAngnHaoIjHnXiJz4
-          remote.s3.secret_key: nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR
-          remote.s3.signature_version: v4
-          remote.s3.sslVerifyServerCert: false
+        # rfs:minio:
+        #   path: s3://compliancy-bucket/
+        #   remote.s3.endpoint: https://minio:9000
+        #   remote.s3.access_key: L4iTAngnHaoIjHnXiJz4
+        #   remote.s3.secret_key: nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR
+        #   remote.s3.signature_version: v4
+        #   remote.s3.sslVerifyServerCert: false
