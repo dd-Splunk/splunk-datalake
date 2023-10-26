@@ -41,10 +41,7 @@ splunk:
           description: Generated hour
           pulldown_type: 1
           TRANSFORMS-cust: addcust
-          # RULESET-ruleset_heure: _rule:ruleset_heure:set_index:eval:izyqr63k _rule:ruleset_heure:set_index:eval:iw5pg0nc _rule:ruleset_heure:set_index:eval:ii13mzca _rule:ruleset_heure:route:eval:r3y487fz
-          # RULESET-ruleset_heure: _rule:ruleset_heure:set_index:eval:izyqr63k _rule:ruleset_heure:set_index:eval:iw5pg0nc _rule:ruleset_heure:set_index:eval:ii13mzca
-          # RULESET_DESC-ruleset_heure: Tag based routing
- 
+
     transforms:
       directory: /opt/splunk/etc/apps/search/local/
       content:
@@ -53,16 +50,7 @@ splunk:
           REGEX: (.*)
           FORMAT: cust::$1
           WRITE_META: true
-        # _rule:ruleset_heure:set_index:eval:ii13mzca:
-        #   INGEST_EVAL: index=if((cust=="customer-double"), "cust2", index)
-        # _rule:ruleset_heure:set_index:eval:iw5pg0nc:
-        #   INGEST_EVAL: index=if((cust=="customer-normal"), "cust1", index)
-        # _rule:ruleset_heure:set_index:eval:izyqr63k:
-        #   INGEST_EVAL: index=if((cust=="customer-unlimited"), "cust0", index)
-        # _rule:ruleset_heure:route:eval:r3y487fz:
-        #   INGEST_EVAL: pd:_destinationKey=if((true()), "rfs:minio", 'pd:_destinationKey')
-        #   STOP_PROCESSING_IF: NOT isnull('pd:_destinationKey') AND 'pd:_destinationKey' != "" AND (isnull('pd:_doRouteClone') OR 'pd:_doRouteClone' == "")
- 
+
     fields:
       directory: /opt/splunk/etc/apps/search/local/
       content:
@@ -77,10 +65,3 @@ splunk:
           batchSizeThresholdKB: 10
           batchTimeout: 60
           format: ndjson
-        # rfs:minio:
-        #   path: s3://compliancy-bucket/
-        #   remote.s3.endpoint: https://minio:9000
-        #   remote.s3.access_key: L4iTAngnHaoIjHnXiJz4
-        #   remote.s3.secret_key: nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR
-        #   remote.s3.signature_version: v4
-        #   remote.s3.sslVerifyServerCert: false
