@@ -6,7 +6,7 @@ SHELL := /bin/bash
 up:
 	rm -rf ./deployment-apps/README
 	date +"Now time is %FT%T%z"
-	$(DC) up -d
+	$(DC) up --build -d
 	date +"Now time is %FT%T%z"
 
 logs:
