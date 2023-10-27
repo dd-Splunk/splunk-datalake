@@ -64,4 +64,6 @@ splunk:
           partitionBy: day, sourcetype
           batchSizeThresholdKB: 10
           batchTimeout: 60
-          format: ndjson
+          compression: gzip
+          format: raw
+
