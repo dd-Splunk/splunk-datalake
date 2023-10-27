@@ -19,7 +19,9 @@ For compliancy reasons all tarffic is also sent to a dedicated S3 bucket.
 
 ## Startup / Shutdown
 
-To launch the whole config:
+Copy `.env.template` into `.env` and fill the SPLUNK_PASSWORD and MINIO_ROOT_PASSWORD values in the file.
+
+Then launch the whole config:
 
 ```bash
 make up
