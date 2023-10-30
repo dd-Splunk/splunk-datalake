@@ -26,5 +26,5 @@ mc mb --insecure ${ALIAS}/${COMPLIANCY_BUCKET}
 mc policy --insecure public ${ALIAS}/s{SMART_BUCKET}
 mc policy --insecure public ${ALIAS}/${COMPLIANCY_BUCKET}
 
-set -o history 
+set -o history
 exit 0
