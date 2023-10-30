@@ -2,3 +2,4 @@ deployment-apps/*.spl
 deployment-apps/README
 .env
 .DS_Store
+test*.sh
