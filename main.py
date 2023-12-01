@@ -1,26 +1,26 @@
 import os
+import io
+import sys
 import urllib3
 
 urllib3.disable_warnings()
 
 from datetime import date
 from minio import Minio
-from minio.error import S3Error
 
 import zlib
-import ndjson
 import jsonlines
 
 
-def stream_gzip_decompress(stream):
-    dec = zlib.decompressobj(32 + zlib.MAX_WBITS)  # offset 32 to skip the header
-    for chunk in stream:
-        rv = dec.decompress(chunk)
-        if rv:
-            yield rv
-    if dec.unused_data:
-        # decompress and yield the remainder
-        yield dec.flush()
+# Extract individual log lines
+def process_ndjson(lines):
+    fp = io.BytesIO(lines)  # readable file-like object
+    reader = jsonlines.Reader(fp)
+    for obj in reader:
+        print(obj)
+
+    reader.close()
+    fp.close()
 
 
 endpoint = os.getenv("MINIO_URL", "localhost:9000")
@@ -43,9 +43,14 @@ bucket_prefix = (
 )
 
 
-# List buckets
-buckets = client.list_buckets()
+# Get buckets
+try:
+    buckets = client.list_buckets()
+except:
+    print(f"No connection to {endpoint} !")
+    sys.exit(1)
 
+# Process Objects in buckets
 for bucket in buckets:
     print(bucket.name, bucket.creation_date)
     objects = client.list_objects(bucket.name, prefix=bucket_prefix, recursive=True)
@@ -55,8 +60,10 @@ for bucket in buckets:
             response = client.get_object(bucket.name, obj.object_name)
             # Read data from response.
             items = response.read(decode_content=True)
+            # Decode .gz
             lines = zlib.decompress(items, 15 + 32)
-            print(lines)
+            # Process .ndjson
+            process_ndjson(lines)
 
         finally:
             response.close()
