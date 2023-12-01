@@ -7,17 +7,21 @@ urllib3.disable_warnings()
 
 from datetime import date
 from minio import Minio
+from minio.error import MinioException
 
 import zlib
 import jsonlines
 
+from hec import send_to_hec
+
 
 # Extract individual log lines
-def process_ndjson(lines):
+def process_ndjson(lines: bytes) -> None:
     fp = io.BytesIO(lines)  # readable file-like object
     reader = jsonlines.Reader(fp)
     for obj in reader:
-        print(obj)
+        status = send_to_hec(event=obj)
+        print(f"Event sent, status {status}")
 
     reader.close()
     fp.close()
@@ -26,7 +30,7 @@ def process_ndjson(lines):
 endpoint = os.getenv("MINIO_URL", "localhost:9000")
 access_key = os.getenv("MINIO_ACCESS_KEY", "admin")
 secret_key = os.getenv("MINIO_SECRET_KEY", "Password$")
-
+compliancy_bucket = os.getenv("COMPLIANCY_BUCKET", "compliancy-bucket")
 
 client = Minio(
     endpoint=endpoint,
@@ -46,26 +50,29 @@ bucket_prefix = (
 # Get buckets
 try:
     buckets = client.list_buckets()
-except:
-    print(f"No connection to {endpoint} !")
+except Exception as e:
+    print(f"Connection to {endpoint} failed!")
     sys.exit(1)
 
-# Process Objects in buckets
-for bucket in buckets:
-    print(bucket.name, bucket.creation_date)
-    objects = client.list_objects(bucket.name, prefix=bucket_prefix, recursive=True)
-    for obj in objects:
-        print(obj.object_name)
-        try:
-            response = client.get_object(bucket.name, obj.object_name)
-            # Read data from response.
-            items = response.read(decode_content=True)
-            # Decode .gz
-            lines = zlib.decompress(items, 15 + 32)
-            # Process .ndjson
-            process_ndjson(lines)
+if compliancy_bucket not in buckets:
+    raise Exception(f"Bucket {compliancy_bucket} not found")
 
-        finally:
-            response.close()
-            response.release_conn()
-        print("---")
+# Process Objects in bucket
+
+objects = client.list_objects(compliancy_bucket, prefix=bucket_prefix, recursive=True)
+for obj in objects:
+    print(obj.object_name)
+    try:
+        response = client.get_object(compliancy_bucket, obj.object_name)
+        # Read data from response.
+        items = response.read(decode_content=True)
+        # Decode .gz
+        lines = zlib.decompress(items, 15 + 32)
+        print(type(lines))
+        # Process .ndjson
+        process_ndjson(lines)
+
+    finally:
+        response.close()
+        response.release_conn()
+    print("---")
