@@ -55,7 +55,7 @@ for bucket in buckets:
             response = client.get_object(bucket.name, obj.object_name)
             # Read data from response.
             items = response.read(decode_content=True)
-            lines=zlib.decompress(items, 15 + 32)
+            lines = zlib.decompress(items, 15 + 32)
             print(lines)
 
         finally:
