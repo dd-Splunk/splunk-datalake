@@ -1,4 +1,4 @@
 minio
-ndjson
+urllib3
 jsonlines
 requests
