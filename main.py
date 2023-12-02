@@ -68,11 +68,10 @@ for obj in objects:
         items = response.read(decode_content=True)
         # Decode .gz
         lines = zlib.decompress(items, 15 + 32)
-        print(type(lines))
         # Process .ndjson
         process_ndjson(lines)
 
     finally:
         response.close()
         response.release_conn()
-    print("---")
+        
