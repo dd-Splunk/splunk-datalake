@@ -1,16 +1,16 @@
-import os
 import io
+import os
 import sys
+
 import urllib3
 
 urllib3.disable_warnings()
 
-from datetime import date
-from minio import Minio
-from minio.error import MinioException
-
 import zlib
+from datetime import date
+
 import jsonlines
+from minio import Minio
 
 from hec import send_to_hec
 
@@ -42,9 +42,7 @@ client = Minio(
 
 thisday = date.today()
 # filter on today's buckets
-bucket_prefix = (
-    f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
-)
+bucket_prefix = f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
 
 
 # Get buckets
@@ -59,14 +57,16 @@ if compliancy_bucket not in buckets:
 
 # Process Objects in bucket
 
-objects = client.list_objects(compliancy_bucket, prefix=bucket_prefix, recursive=True)
+objects = client.list_objects(
+    compliancy_bucket, prefix=bucket_prefix, recursive=True
+)
 for obj in objects:
     print(obj.object_name)
     try:
         response = client.get_object(compliancy_bucket, obj.object_name)
         # Read data from response.
         items = response.read(decode_content=True)
-        # Decode .gz
+        # Decode .gz https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
         lines = zlib.decompress(items, 15 + 32)
         # Process .ndjson
         process_ndjson(lines)
@@ -74,4 +74,3 @@ for obj in objects:
     finally:
         response.close()
         response.release_conn()
-        

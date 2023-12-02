@@ -1,10 +1,13 @@
 import json
+
 import requests
 
 requests.packages.urllib3.disable_warnings()
 
+
 class http_event_collector:
     pass
+
 
 def send_to_hec(event) -> int:
     hec_host = "https://localhost:8088"

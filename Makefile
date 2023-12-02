@@ -1,7 +1,7 @@
 .SILENT:
 .PHONY: up logs down clean
 DC := docker compose
-SHELL := /bin/bash 
+SHELL := /bin/bash
 
 up:
 	rm -rf ./deployment-apps/README

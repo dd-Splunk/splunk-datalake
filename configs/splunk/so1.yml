@@ -39,7 +39,7 @@ splunk:
       directory: /opt/splunk/etc/apps/search/local/
       content:
         heure:
-          DATETIME_CONFIG: 
+          DATETIME_CONFIG:
           LINE_BREAKER: (\r\n+)
           NO_BINARY_CHECK: true
           category: Custom
@@ -71,4 +71,3 @@ splunk:
           batchTimeout: 60
           compression: gzip
           format: raw
-
