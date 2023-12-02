@@ -21,6 +21,3 @@ splunk:
       content:
         target-broker:deploymentServer:
           targetUri: ds1:8089
-
-
-

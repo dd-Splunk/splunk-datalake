@@ -2,3 +2,4 @@ minio
 urllib3
 jsonlines
 requests
+pre-commit
