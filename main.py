@@ -2,13 +2,13 @@ import io
 import os
 import sys
 import zlib
-from datetime import date
+from datetime import datetime
 
 import jsonlines
 import urllib3
 from minio import Minio
 
-from .hec import send_to_hec
+from hec import send_to_hec
 
 urllib3.disable_warnings()
 
@@ -30,46 +30,53 @@ access_key = os.getenv("MINIO_ACCESS_KEY", "admin")
 secret_key = os.getenv("MINIO_SECRET_KEY", "Password$")
 compliancy_bucket = os.getenv("COMPLIANCY_BUCKET", "compliancy-bucket")
 
-client = Minio(
-    endpoint=endpoint,
-    access_key=access_key,
-    secret_key=secret_key,
-    secure=True,
-    cert_check=False,
-)
 
-thisday = date.today()
-# filter on today's buckets
-bucket_prefix = (
-    f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
-)
-
-
-# Get buckets
-try:
-    buckets = client.list_buckets()
-except Exception:
-    print(f"Connection to {endpoint} failed!")
-    sys.exit(1)
-
-if compliancy_bucket not in buckets:
-    raise Exception(f"Bucket {compliancy_bucket} not found")
-
-# Process Objects in bucket
-
-objects = client.list_objects(compliancy_bucket, prefix=bucket_prefix, recursive=True)
-for obj in objects:
-    print(obj.object_name)
+def get_objects(thisday: datetime, client: Minio) -> None:
+    bucket_prefix = (
+        f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
+    )
+    # Get buckets
     try:
-        response = client.get_object(compliancy_bucket, obj.object_name)
-        # Read data from response.
-        items = response.read(decode_content=True)
-        # Decode .gz
-        # https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
-        lines = zlib.decompress(items, 15 + 32)
-        # Process .ndjson
-        process_ndjson(lines)
+        buckets = client.list_buckets()
+    except Exception:
+        print(f"Connection to {endpoint} failed!")
+        sys.exit(1)
 
-    finally:
-        response.close()
-        response.release_conn()
+    if compliancy_bucket not in buckets:
+        raise Exception(f"Bucket {compliancy_bucket} not found")
+
+    # Process Objects in bucket
+
+    objects = client.list_objects(
+        compliancy_bucket, prefix=bucket_prefix, recursive=True
+    )
+    for obj in objects:
+        print(obj.object_name)
+        try:
+            response = client.get_object(compliancy_bucket, obj.object_name)
+            # Read data from response.
+            items = response.read(decode_content=True)
+            # Decode .gz
+            # https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
+            lines = zlib.decompress(items, 15 + 32)
+            process_ndjson(lines)
+
+        finally:
+            response.close()
+            response.release_conn()
+
+    return None
+
+
+if __name__ == "__main__":
+    client = Minio(
+        endpoint=endpoint,
+        access_key=access_key,
+        secret_key=secret_key,
+        secure=True,
+        cert_check=False,
+    )
+
+    thisday = datetime(2023, 12, 1)
+    # filter on today's buckets
+    get_objects(thisday, client)
