@@ -1,4 +1,5 @@
 import json
+from http import HTTPStatus
 
 import requests
 
@@ -9,7 +10,7 @@ class http_event_collector:
     pass
 
 
-def send_to_hec(event) -> int:
+def send_to_hec(event) -> HTTPStatus:
     hec_host = "https://localhost:8088"
     hec_token = "abcd-1234-efgh-5678"
     hec_endpoint = "/services/collector/event"
@@ -17,14 +18,21 @@ def send_to_hec(event) -> int:
     url = hec_host + hec_endpoint
     headers = {"Authorization": "Splunk " + hec_token}
 
-    # https://medium.com/@rysartem/sending-data-to-splunk-hec-in-a-right-way-4a84af3c44e2
-    response = requests.post(
-        url=url,
-        headers=headers,
-        data=json.dumps(event, ensure_ascii=False).encode("utf-8"),
-        verify=False,
-    )
-    return response.status_code
+    status_code = HTTPStatus.REQUEST_TIMEOUT
+
+    try:
+        # https://medium.com/@rysartem/sending-data-to-splunk-hec-in-a-right-way-4a84af3c44e2
+        response = requests.post(
+            url=url,
+            headers=headers,
+            data=json.dumps(event, ensure_ascii=False).encode("utf-8"),
+            verify=False,
+        )
+        status_code = response.status_code
+    except Exception:
+        print(f"Connection to {hec_host} refused!")
+
+    return status_code
 
 
 if __name__ == "__main__":
