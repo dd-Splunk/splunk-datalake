@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 import sys
 import zlib
@@ -19,7 +20,7 @@ def process_ndjson(lines: bytes) -> None:
     reader = jsonlines.Reader(fp)
     for obj in reader:
         status = send_to_hec(event=obj)
-        print(f"Event sent, status {status}")
+        logging.info(f"Event sent, status {status}")
 
     reader.close()
     fp.close()
@@ -39,11 +40,12 @@ def get_objects(thisday: datetime, client: Minio) -> None:
     try:
         buckets = client.list_buckets()
     except Exception:
-        print(f"Connection to {endpoint} failed!")
+        logging.error(f"Connection to {endpoint} failed!")
         sys.exit(1)
 
     if compliancy_bucket not in buckets:
-        raise Exception(f"Bucket {compliancy_bucket} not found")
+        logging.error(f"Bucket {compliancy_bucket} not found")
+        sys.exit(1)
 
     # Process Objects in bucket
 
@@ -51,7 +53,7 @@ def get_objects(thisday: datetime, client: Minio) -> None:
         compliancy_bucket, prefix=bucket_prefix, recursive=True
     )
     for obj in objects:
-        print(obj.object_name)
+        logging.info(obj.object_name)
         try:
             response = client.get_object(compliancy_bucket, obj.object_name)
             # Read data from response.
@@ -77,6 +79,6 @@ if __name__ == "__main__":
         cert_check=False,
     )
 
+    # Select a given day
     thisday = datetime(2023, 12, 1)
-    # filter on today's buckets
     get_objects(thisday, client)

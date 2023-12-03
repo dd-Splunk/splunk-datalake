@@ -1,4 +1,5 @@
 import json
+import logging
 from http import HTTPStatus
 
 import requests
@@ -30,7 +31,7 @@ def send_to_hec(event) -> HTTPStatus:
         )
         status_code = response.status_code
     except Exception:
-        print(f"Connection to {hec_host} refused!")
+        logging.error(f"Connection to {hec_host} refused!")
 
     return status_code
 
@@ -48,4 +49,4 @@ if __name__ == "__main__":
     }
 
     status = send_to_hec(event=event)
-    print(f"Event sent, status {status}")
+    logging.info(f"Event sent, status {status}")
