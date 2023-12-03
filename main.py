@@ -1,18 +1,16 @@
 import io
 import os
 import sys
-
-import urllib3
-
-urllib3.disable_warnings()
-
 import zlib
 from datetime import date
 
 import jsonlines
+import urllib3
 from minio import Minio
 
-from hec import send_to_hec
+from .hec import send_to_hec
+
+urllib3.disable_warnings()
 
 
 # Extract individual log lines
@@ -42,13 +40,15 @@ client = Minio(
 
 thisday = date.today()
 # filter on today's buckets
-bucket_prefix = f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
+bucket_prefix = (
+    f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
+)
 
 
 # Get buckets
 try:
     buckets = client.list_buckets()
-except Exception as e:
+except Exception:
     print(f"Connection to {endpoint} failed!")
     sys.exit(1)
 
@@ -57,16 +57,15 @@ if compliancy_bucket not in buckets:
 
 # Process Objects in bucket
 
-objects = client.list_objects(
-    compliancy_bucket, prefix=bucket_prefix, recursive=True
-)
+objects = client.list_objects(compliancy_bucket, prefix=bucket_prefix, recursive=True)
 for obj in objects:
     print(obj.object_name)
     try:
         response = client.get_object(compliancy_bucket, obj.object_name)
         # Read data from response.
         items = response.read(decode_content=True)
-        # Decode .gz https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
+        # Decode .gz
+        # https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
         lines = zlib.decompress(items, 15 + 32)
         # Process .ndjson
         process_ndjson(lines)
