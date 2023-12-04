@@ -8,7 +8,8 @@ import jsonlines
 import urllib3
 from minio import Minio
 
-from config import archive
+from classes import Archive, Destination
+from config import archive, destination
 from hec import send_to_hec
 
 urllib3.disable_warnings()
@@ -17,22 +18,31 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 # Extract individual log lines
-def process_ndjson(lines: bytes) -> None:
+def process_ndjson(lines: bytes, destination: Destination) -> None:
     fp = io.BytesIO(lines)  # readable file-like object
     reader = jsonlines.Reader(fp)
     for obj in reader:
-        status = send_to_hec(event=obj)
+        status = send_to_hec(event=obj, destination=destination)
         logging.debug(f"Event sent, status {status}")
 
     reader.close()
     fp.close()
 
 
-def get_objects(thisday: datetime, client: Minio) -> None:
+def restore_objects(
+    thisday: datetime, archive: Archive, destination: Destination
+) -> None:
     bucket_prefix = (
         f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
     )
     # Get buckets
+    client = Minio(
+        endpoint=archive.host,
+        access_key=archive.access_key,
+        secret_key=archive.secret_key,
+        secure=True,
+        cert_check=False,
+    )
     try:
         buckets = client.list_buckets()
     except Exception:
@@ -57,7 +67,7 @@ def get_objects(thisday: datetime, client: Minio) -> None:
             # Decode .gz
             # https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
             lines = zlib.decompress(items, 15 + 32)
-            process_ndjson(lines)
+            process_ndjson(lines, destination)
 
         finally:
             response.close()
@@ -76,5 +86,6 @@ if __name__ == "__main__":
     )
 
     # Select a given day
-    thisday = datetime(2023, 12, 1)
-    get_objects(thisday, client)
+    onThatDay = datetime(2023, 12, 1)
+    # Restore from archive to destination
+    restore_objects(onThatDay, archive, destination)
