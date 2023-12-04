@@ -1,3 +1,4 @@
+configparser
 jsonlines
 minio
 pre-commit
