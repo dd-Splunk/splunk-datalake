@@ -18,7 +18,7 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 # Extract individual log lines
-def process_ndjson(lines: bytes, destination: Destination) -> None:
+def send_ndjson(lines: bytes, destination: Destination) -> None:
     fp = io.BytesIO(lines)  # readable file-like object
     reader = jsonlines.Reader(fp)
     for obj in reader:
@@ -61,13 +61,15 @@ def restore_objects(
     for obj in objects:
         logging.info(obj.object_name)
         try:
-            response = client.get_object(archive.compliancy_bucket, obj.object_name)
+            response = client.get_object(
+                bucket_name=archive.compliancy_bucket, object_name=obj.object_name
+            )
             # Read data from response.
             items = response.read(decode_content=True)
             # Decode .gz
             # https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
             lines = zlib.decompress(items, 15 + 32)
-            process_ndjson(lines, destination)
+            send_ndjson(lines, destination)
 
         finally:
             response.close()
