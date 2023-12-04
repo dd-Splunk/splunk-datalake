@@ -8,10 +8,12 @@ import jsonlines
 import urllib3
 from minio import Minio
 
-from config import config
+from config import archive
 from hec import send_to_hec
 
 urllib3.disable_warnings()
+logging.basicConfig()
+logging.getLogger().setLevel(logging.INFO)
 
 
 # Extract individual log lines
@@ -20,7 +22,7 @@ def process_ndjson(lines: bytes) -> None:
     reader = jsonlines.Reader(fp)
     for obj in reader:
         status = send_to_hec(event=obj)
-        logging.info(f"Event sent, status {status}")
+        logging.debug(f"Event sent, status {status}")
 
     reader.close()
     fp.close()
@@ -34,22 +36,22 @@ def get_objects(thisday: datetime, client: Minio) -> None:
     try:
         buckets = client.list_buckets()
     except Exception:
-        logging.error(f"Connection to {config.endpoint} failed!")
+        logging.error(f"Connection to {archive.host} failed!")
         sys.exit(1)
 
-    if config.compliancy_bucket not in buckets:
-        logging.error(f"Bucket {config.compliancy_bucket} not found")
+    if archive.compliancy_bucket not in buckets:
+        logging.error(f"Bucket {archive.compliancy_bucket} not found")
         sys.exit(1)
 
     # Process Objects in bucket
 
     objects = client.list_objects(
-        bucket_name=config.compliancy_bucket, prefix=bucket_prefix, recursive=True
+        bucket_name=archive.compliancy_bucket, prefix=bucket_prefix, recursive=True
     )
     for obj in objects:
         logging.info(obj.object_name)
         try:
-            response = client.get_object(config.compliancy_bucket, obj.object_name)
+            response = client.get_object(archive.compliancy_bucket, obj.object_name)
             # Read data from response.
             items = response.read(decode_content=True)
             # Decode .gz
@@ -66,9 +68,9 @@ def get_objects(thisday: datetime, client: Minio) -> None:
 
 if __name__ == "__main__":
     client = Minio(
-        endpoint=config.endpoint,
-        access_key=config.access_key,
-        secret_key=config.secret_key,
+        endpoint=archive.host,
+        access_key=archive.access_key,
+        secret_key=archive.secret_key,
         secure=True,
         cert_check=False,
     )
