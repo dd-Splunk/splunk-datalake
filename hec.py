@@ -32,7 +32,6 @@ def send_to_hec(event) -> HTTPStatus:
         status_code = response.status_code
     except Exception:
         logging.error(f"Connection to {hec_host} refused!")
-
     return status_code
 
 
