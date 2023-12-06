@@ -37,6 +37,7 @@ try:
     section = parser[section_name]
     destination = Destination(
         section.get("HOST"),
+        section.get("PORT"),
         section.get("TOKEN"),
     )
 except KeyError:

@@ -10,7 +10,6 @@ from minio import Minio
 
 from classes import Archive, Destination
 from config import archive, destination
-from hec import send_to_hec
 
 urllib3.disable_warnings()
 logging.basicConfig()
@@ -22,7 +21,7 @@ def send_ndjson(lines: bytes, destination: Destination) -> None:
     fp = io.BytesIO(lines)  # readable file-like object
     reader = jsonlines.Reader(fp)
     for obj in reader:
-        status = send_to_hec(event=obj, destination=destination)
+        status = destination.sendEvent(obj)
         logging.debug(f"Event sent, status {status}")
 
     reader.close()
@@ -43,12 +42,15 @@ def restore_objects(
         secure=True,
         cert_check=False,
     )
-    try:
-        buckets = client.list_buckets()
-    except Exception:
-        logging.error(f"Connection to {archive.host} failed!")
+
+    if not archive.check_connectivity:
+        logging.error(f"Archive host {archive.host} unreachable!")
+        sys.exit(1)
+    if not destination.check_connectivity:
+        logging.error(f"Destination host {destination.host} unreachable!")
         sys.exit(1)
 
+    buckets = client.list_buckets()
     if archive.compliancy_bucket not in buckets:
         logging.error(f"Bucket {archive.compliancy_bucket} not found")
         sys.exit(1)
