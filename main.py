@@ -29,7 +29,7 @@ def send_ndjson(lines: bytes, destination: Destination) -> None:
 
 
 def restore_objects(
-    thisday: datetime, archive: Archive, destination: Destination
+    onThatDay: datetime, archive: Archive, destination: Destination
 ) -> None:
     # Get buckets
     client = Minio(
@@ -54,7 +54,7 @@ def restore_objects(
 
     # Process Objects in bucket
 
-    bucket_prefix = archive.bucket_prefix(thisday)
+    bucket_prefix = archive.bucket_prefix(onThatDay)
     objects = client.list_objects(
         bucket_name=archive.compliancy_bucket, prefix=bucket_prefix, recursive=True
     )
@@ -79,14 +79,6 @@ def restore_objects(
 
 
 if __name__ == "__main__":
-    client = Minio(
-        endpoint=archive.host,
-        access_key=archive.access_key,
-        secret_key=archive.secret_key,
-        secure=True,
-        cert_check=False,
-    )
-
     # Select a given day
     onThatDay = datetime(2023, 12, 1)
     # Restore from archive to destination
