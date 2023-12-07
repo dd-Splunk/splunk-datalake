@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 from http import HTTPStatus
@@ -30,6 +31,18 @@ class Archive:
     @property
     def url(self) -> str:
         return f"https://{self.host}"
+
+    def bucket_prefix(self, thisday: datetime, sourcetype: str = None) -> str:
+        prefix = f"year={thisday.year:0{4}}"
+        prefix += f"/month={thisday.month:0{2}}"
+        prefix += f"/day={thisday.day:0{2}}/"
+
+        if sourcetype is not None:
+            prefix += f"sourcetype={sourcetype}/"
+
+        self.log.debug(f"Bucket prefix {prefix}")
+
+        return prefix
 
     @property
     def check_connectivity(self) -> bool:
@@ -123,6 +136,15 @@ class Destination:
 if __name__ == "__main__":
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
+
+    archive = Archive(
+        "localhost:9000",
+        "L4iTAngnHaoIjHnXiJz4",
+        "nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR",
+    )
+    print(archive.check_connectivity)
+    print(archive.bucket_prefix(datetime.datetime(2023, 12, 1), "heure"))
+    print(archive.bucket_prefix(datetime.datetime(2023, 2, 3)))
     # Test data
     event = {
         "time": 1701433088,
@@ -135,6 +157,6 @@ if __name__ == "__main__":
     }
     destination = Destination(token="abcd-1234-efgh-5678")
 
-    print(destination.check_connectivity())
+    print(destination.check_connectivity)
     status = destination.sendEvent(event)
     logging.info(f"Event sent, status {status}")

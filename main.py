@@ -31,9 +31,6 @@ def send_ndjson(lines: bytes, destination: Destination) -> None:
 def restore_objects(
     thisday: datetime, archive: Archive, destination: Destination
 ) -> None:
-    bucket_prefix = (
-        f"year={thisday.year:0{4}}/month={thisday.month:0{2}}/day={thisday.day:0{2}}/"
-    )
     # Get buckets
     client = Minio(
         endpoint=archive.host,
@@ -57,6 +54,7 @@ def restore_objects(
 
     # Process Objects in bucket
 
+    bucket_prefix = archive.bucket_prefix(thisday)
     objects = client.list_objects(
         bucket_name=archive.compliancy_bucket, prefix=bucket_prefix, recursive=True
     )
