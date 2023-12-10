@@ -19,10 +19,11 @@ section_name = "minio"
 try:
     section = parser[section_name]
     archive = Archive(
-        section.get("HOST"),
-        section.get("ACCESS_KEY"),
-        section.get("SECRET_KEY"),
-        section.get("COMPLIANCY_BUCKET"),
+        host=section.get("HOST"),
+        port=section.get("PORT"),
+        access_key=section.get("ACCESS_KEY"),
+        secret_key=section.get("SECRET_KEY"),
+        compliancy_bucket=section.get("COMPLIANCY_BUCKET"),
     )
 except KeyError:
     logging.warning(f"Missing section {section_name} in {config_file}")

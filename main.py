@@ -33,7 +33,7 @@ def restore_objects(
 ) -> None:
     # Get buckets
     client = Minio(
-        endpoint=archive.host,
+        endpoint=f"{archive.host}:{archive.port}",
         access_key=archive.access_key,
         secret_key=archive.secret_key,
         secure=True,
