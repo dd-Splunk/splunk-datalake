@@ -43,13 +43,11 @@ def restore_objects(
     if not archive.check_connectivity:
         logging.error(f"Archive host {archive.host} unreachable!")
         sys.exit(1)
+    if not archive.check_compliancy_bucket:
+        logging.error(f"Bucket {archive.compliancy_bucket} not found")
+        sys.exit(1)
     if not destination.check_connectivity:
         logging.error(f"Destination host {destination.host} unreachable!")
-        sys.exit(1)
-
-    buckets = client.list_buckets()
-    if archive.compliancy_bucket not in buckets:
-        logging.error(f"Bucket {archive.compliancy_bucket} not found")
         sys.exit(1)
 
     # Process Objects in bucket
