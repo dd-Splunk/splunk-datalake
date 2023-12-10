@@ -4,6 +4,7 @@ import logging
 from http import HTTPStatus
 
 import requests
+from minio import Minio
 
 
 class Archive:
@@ -22,6 +23,13 @@ class Archive:
         self.secret_key = secret_key if secret_key is not None else "?"
         self.compliancy_bucket = (
             compliancy_bucket if compliancy_bucket is not None else "compliancy-bucket"
+        )
+        self.client = Minio(
+            endpoint=self.host,
+            access_key=self.access_key,
+            secret_key=self.secret_key,
+            secure=True,
+            cert_check=False,
         )
 
     def __repr__(self) -> str:
@@ -47,7 +55,7 @@ class Archive:
     @property
     def check_connectivity(self) -> bool:
         requests.packages.urllib3.disable_warnings()
-        self.log.info("Checking Minio Server URI reachability.")
+        self.log.info(f"Checking Archive Server {self.url} reachability.")
         minio_reachable = False
         try:
             response = requests.post(
@@ -63,6 +71,15 @@ class Archive:
             self.log.warning(f"Archive host {self.url} not reachable!")
 
         return minio_reachable
+
+    @property
+    def check_compliancy_bucket(self) -> bool:
+        self.log.info(f"Checking availability of {self.compliancy_bucket} in archive")
+
+        buckets = self.client.list_buckets()
+        compliancy_bucket_exists = self.compliancy_bucket in buckets
+
+        return compliancy_bucket_exists
 
 
 class Destination:
