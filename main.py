@@ -4,12 +4,10 @@ import sys
 from datetime import datetime
 
 import jsonlines
-import urllib3
 
 from classes import Archive, Destination
 from config import archive, destination
 
-urllib3.disable_warnings()
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 
