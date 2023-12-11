@@ -163,7 +163,7 @@ class Destination:
 
         return hec_reachable
 
-    def sendEvent(self, payload) -> HTTPStatus:
+    def sendEvent(self, payload: dict) -> HTTPStatus:
         requests.packages.urllib3.disable_warnings()
         status = HTTPStatus.SERVICE_UNAVAILABLE
         self.log.debug("Single Submit: Sticking the event on the queue.")
