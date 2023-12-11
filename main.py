@@ -13,7 +13,7 @@ from config import archive, destination
 
 urllib3.disable_warnings()
 logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 # Extract individual log lines
@@ -37,7 +37,7 @@ def restore_objects(
         access_key=archive.access_key,
         secret_key=archive.secret_key,
         secure=True,
-        cert_check=False,
+        cert_check=archive.ssl_verify,
     )
 
     if not archive.check_connectivity:

@@ -24,6 +24,7 @@ try:
         access_key=section.get("ACCESS_KEY"),
         secret_key=section.get("SECRET_KEY"),
         compliancy_bucket=section.get("COMPLIANCY_BUCKET"),
+        ssl_verify=section.get("SSL_VERYFY"),
     )
 except KeyError:
     logging.warning(f"Missing section {section_name} in {config_file}")
@@ -37,12 +38,13 @@ section_name = "splunk"
 try:
     section = parser[section_name]
     destination = Destination(
-        section.get("HOST"),
-        section.get("PORT"),
-        section.get("TOKEN"),
+        host=section.get("HOST"),
+        port=section.get("PORT"),
+        token=section.get("TOKEN"),
+        proto=section.get("PROTO"),
+        ssl_verify=section.get("SSL_VERIFY"),
     )
 except KeyError:
     logging.warning(f"Missing section {section_name} in {config_file}")
-
 
 logging.debug(destination)

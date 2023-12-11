@@ -2,9 +2,12 @@ import datetime
 import json
 import logging
 from http import HTTPStatus
+from typing import Literal
 
 import requests
 from minio import Minio
+
+Proto = Literal["http", "https"]
 
 
 class Archive:
@@ -15,6 +18,7 @@ class Archive:
         access_key: str = None,
         secret_key: str = None,
         compliancy_bucket: str = None,
+        ssl_verify: bool = None,
     ):
         self.log = logging.getLogger("Minio")
         self.log.setLevel(logging.INFO)
@@ -26,12 +30,14 @@ class Archive:
         self.compliancy_bucket = (
             compliancy_bucket if compliancy_bucket is not None else "compliancy-bucket"
         )
+        self.ssl_verify = ssl_verify if ssl_verify is not None else False
+
         self.client = Minio(
             endpoint=f"{self.host}:{self.port}",
             access_key=self.access_key,
             secret_key=self.secret_key,
             secure=True,
-            cert_check=False,
+            cert_check=self.ssl_verify,
         )
 
     def __repr__(self) -> str:
@@ -90,7 +96,7 @@ class Destination:
         host: str = None,
         port: int = None,
         token: str = None,
-        proto: str = None,
+        proto: Proto = None,
         ssl_verify: bool = None,
     ):
         self.log = logging.getLogger("HEC")
@@ -132,7 +138,7 @@ class Destination:
             self.log.debug(f"Status: {response.status_code}")
 
         except Exception:
-            self.log.error("Splunk Server URI is unreachable.")
+            self.log.error(f"Splunk Server {self.host} is unreachable.")
 
         return hec_reachable
 
@@ -147,11 +153,11 @@ class Destination:
                 url=self.url,
                 headers=self.headers,
                 data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-                verify=False,
+                verify=self.ssl_verify,
             )
             status = response.status_code
         except Exception:
-            logging.error(f"Connection to {self.url} refused!")
+            logging.error(f"Connection to {self.host} refused!")
 
         return status
 
