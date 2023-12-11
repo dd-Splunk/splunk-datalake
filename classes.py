@@ -163,17 +163,17 @@ class Destination:
 
         return hec_reachable
 
-    def sendEvent(self, payload: dict) -> HTTPStatus:
+    def sendEvent(self, event: dict) -> HTTPStatus:
         requests.packages.urllib3.disable_warnings()
         status = HTTPStatus.SERVICE_UNAVAILABLE
         self.log.debug("Single Submit: Sticking the event on the queue.")
-        self.log.debug(f"event: {payload}")
+        self.log.debug(f"event: {event}")
         try:
             # https://medium.com/@rysartem/sending-data-to-splunk-hec-in-a-right-way-4a84af3c44e2
             response = requests.post(
                 url=self.url,
                 headers=self.headers,
-                data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+                data=json.dumps(event, ensure_ascii=False).encode("utf-8"),
                 verify=self.ssl_verify,
             )
             status = response.status_code

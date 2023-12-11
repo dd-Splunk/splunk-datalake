@@ -38,12 +38,12 @@ def restore_objects(
         lines = archive.get_lines(obj.object_name)
         # Extract individual log lines
         fp = io.BytesIO(lines)  # readable file-like object
-        reader = jsonlines.Reader(fp)
-        for obj in reader:
-            status = destination.sendEvent(obj)
+        events = jsonlines.Reader(fp)
+        for event in events:
+            status = destination.sendEvent(event)
             logging.debug(f"Event sent, status {status}")
 
-        reader.close()
+        events.close()
         fp.close()
 
     return None
