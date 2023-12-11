@@ -10,11 +10,11 @@ from minio import Minio
 class Archive:
     def __init__(
         self,
-        host=None,
-        port=None,
-        access_key=None,
-        secret_key=None,
-        compliancy_bucket=None,
+        host: str = None,
+        port: int = None,
+        access_key: str = None,
+        secret_key: str = None,
+        compliancy_bucket: str = None,
     ):
         self.log = logging.getLogger("Minio")
         self.log.setLevel(logging.INFO)
@@ -87,9 +87,11 @@ class Archive:
 class Destination:
     def __init__(
         self,
-        host=None,
-        port=None,
-        token=None,
+        host: str = None,
+        port: int = None,
+        token: str = None,
+        proto: str = None,
+        ssl_verify: bool = None,
     ):
         self.log = logging.getLogger("HEC")
         self.log.setLevel(logging.INFO)
@@ -98,13 +100,15 @@ class Destination:
         self.port = port if port is not None else "8088"
 
         self.token = token if token is not None else "aa-bb"
+        self.proto = proto if proto is not None else "https"
+        self.ssl_verify = ssl_verify if ssl_verify is not None else False
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}: {self.host} {self.token}"
 
     @property
     def url(self) -> str:
-        return f"https://{self.host}:{self.port}/services/collector/event"
+        return f"{self.proto}://{self.host}:{self.port}/services/collector/event"
 
     @property
     def headers(self) -> dict:
