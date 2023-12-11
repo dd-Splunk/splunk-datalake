@@ -9,6 +9,7 @@ import requests
 from minio import Minio
 
 Proto = Literal["http", "https"]
+Url = str
 
 
 class Archive:
@@ -77,7 +78,7 @@ class Archive:
         return lines
 
     @property
-    def url(self) -> str:
+    def url(self) -> Url:
         return f"https://{self.host}:{self.port}"
 
     @property
@@ -133,7 +134,7 @@ class Destination:
         return f"{self.__class__.__name__}: {self.host} {self.token}"
 
     @property
-    def url(self) -> str:
+    def url(self) -> Url:
         return f"{self.proto}://{self.host}:{self.port}/services/collector/event"
 
     @property
