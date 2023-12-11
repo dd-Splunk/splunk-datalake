@@ -185,15 +185,11 @@ class Destination:
 
 
 if __name__ == "__main__":
+    from config import destination
+
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
 
-    archive = Archive(
-        access_key="L4iTAngnHaoIjHnXiJz4",
-        secret_key="nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR",
-    )
-
-    destination = Destination(token="abcd-1234-efgh-5678")
     # Test data
     event = {
         "time": 1701433088,
