@@ -15,6 +15,10 @@ logging.getLogger().setLevel(logging.INFO)
 def restore_objects(
     onThatDay: datetime, archive: Archive, destination: Destination
 ) -> None:
+    if onThatDay > datetime.now():
+        logging.error(f"Restoring from {onThatDay} is not allowed")
+        sys
+        exit(1)
     if not archive.check_connectivity:
         logging.error(f"Archive host {archive.host} unreachable!")
         sys.exit(1)
