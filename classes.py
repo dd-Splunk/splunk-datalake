@@ -176,6 +176,7 @@ class Destination:
                 verify=self.ssl_verify,
             )
             status = response.status_code
+            self.log.debug(f"Status: {response.status_code}")
         except Exception:
             logging.error(f"Connection to {self.host} refused!")
 
@@ -187,13 +188,11 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.DEBUG)
 
     archive = Archive(
-        "localhost:9000",
-        "L4iTAngnHaoIjHnXiJz4",
-        "nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR",
+        access_key="L4iTAngnHaoIjHnXiJz4",
+        secret_key="nAoIBDDUqr3VIR3emTH7oyux1VJ2TDG48vF0l7LR",
     )
-    print(archive.check_connectivity)
-    print(archive.bucket_prefix(datetime.datetime(2023, 12, 1), "heure"))
-    print(archive.bucket_prefix(datetime.datetime(2023, 2, 3)))
+
+    destination = Destination(token="abcd-1234-efgh-5678")
     # Test data
     event = {
         "time": 1701433088,
@@ -204,8 +203,6 @@ if __name__ == "__main__":
         "index": "cust2",
         "fields": {"cust": "customer-double"},
     }
-    destination = Destination(token="abcd-1234-efgh-5678")
 
-    print(destination.check_connectivity)
     status = destination.sendEvent(event)
-    logging.info(f"Event sent, status {status}")
+    logging.debug(f"Status: {status}")
