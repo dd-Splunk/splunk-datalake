@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import zlib
 from http import HTTPStatus
 from typing import Literal
 
@@ -55,6 +56,25 @@ class Archive:
         self.log.debug(f"Bucket prefix {prefix}")
 
         return prefix
+
+    def list_objects(self, thisday: datetime):
+        objects = self.client.list_objects(
+            bucket_name=self.compliancy_bucket,
+            prefix=self.bucket_prefix(thisday),
+            recursive=True,
+        )
+        return objects
+
+    def get_lines(self, object_name: str) -> bytes:
+        response = self.client.get_object(
+            bucket_name=self.compliancy_bucket, object_name=object_name
+        )
+        # Read data from response.
+        items = response.read(decode_content=True)
+        # Decode .gz
+        # https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
+        lines = zlib.decompress(items, 15 + 32)
+        return lines
 
     @property
     def url(self) -> str:
