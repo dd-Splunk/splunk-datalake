@@ -4,7 +4,7 @@ import sys
 
 from classes import Archive, Destination
 
-config_file = "configs/splunk/app.ini"
+config_file = "configs/python/app.ini"
 parser = configparser.ConfigParser()
 try:
     parser.read_file(open(config_file))
