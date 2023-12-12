@@ -57,10 +57,11 @@ class Archive:
 
         return prefix
 
-    def list_objects(self, thisday: datetime):
+    def list_objects(self, thisday: datetime, sourcetype: str = None):
         objects = self.client.list_objects(
             bucket_name=self.compliancy_bucket,
-            prefix=self.bucket_prefix(thisday),
+            prefix=self.bucket_prefix(thisday, sourcetype),
+            # Recurse in case sourcetype is ommitted but present in archived object
             recursive=True,
         )
         return objects
