@@ -1,9 +1,6 @@
-import io
 import logging
 import sys
 from datetime import datetime
-
-import jsonlines
 
 from classes import Archive, Destination
 from config import archive, destination
@@ -29,22 +26,16 @@ def restore_objects(
         logging.error(f"Destination host {destination.host} unreachable!")
         sys.exit(1)
 
-    # Process Objects in bucket
+    # Process ndjson.gz Objects in bucket
     objects = archive.list_objects(onThatDay)
 
     for obj in objects:
         logging.info(obj.object_name)
-
+        # Decode .gz
         lines = archive.get_lines(obj.object_name)
-        # Extract individual log lines
-        fp = io.BytesIO(lines)  # readable file-like object
-        events = jsonlines.Reader(fp)
-        for event in events:
-            status = destination.sendEvent(event)
-            logging.debug(f"Event sent, status {status}")
-
-        events.close()
-        fp.close()
+        # send ndjson ( multi lines )
+        status = destination.sendMultiLines(lines)
+        logging.info(f"Event sent, status {status}")
 
     return None
 
