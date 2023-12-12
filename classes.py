@@ -185,20 +185,27 @@ class Destination:
 
 
 if __name__ == "__main__":
+    import random
+
     from config import destination
 
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
 
+    customers = {0: "slow", 1: "normal", 2: "fast"}
+    # Get random dictionary pair in dictionary
+    # Using random.choice() + list() + items()
+    key, val = random.choice(list(customers.items()))
+
     # Test data
     event = {
-        "time": 1701433088,
-        "event": "Current Time = 13:18:08\n",
-        "host": "uf2",
-        "source": "/opt/splunkforwarder/etc/apps/double-speed/bin/heure.py",
+        "time": datetime.datetime.now().timestamp(),
+        "event": "Current Time = " + datetime.datetime.now().strftime("%H:%M:%S"),
+        "host": "customer" + str(key),
+        "source": "/opt/splunkforwarder/etc/apps/" + val + "-speed/bin/heure.py",
         "sourcetype": "heure",
-        "index": "cust2",
-        "fields": {"cust": "customer-double"},
+        "index": "cust" + str(key),
+        "fields": {"cust": val},
     }
 
     status = destination.sendEvent(event)
