@@ -1,5 +1,4 @@
 import datetime
-import json
 import logging
 import zlib
 from http import HTTPStatus
@@ -139,7 +138,10 @@ class Destination:
 
     @property
     def headers(self) -> dict:
-        return {"Authorization": "Splunk " + self.token}
+        return {
+            "Authorization": "Splunk " + self.token,
+            "Content-Type": "application/json",
+        }
 
     @property
     def check_connectivity(self) -> bool:
@@ -163,17 +165,14 @@ class Destination:
 
         return hec_reachable
 
-    def sendEvent(self, event: dict) -> HTTPStatus:
+    def sendMultiLines(self, payload: str) -> HTTPStatus:
         requests.packages.urllib3.disable_warnings()
         status = HTTPStatus.SERVICE_UNAVAILABLE
-        self.log.debug("Single Submit: Sticking the event on the queue.")
-        self.log.debug(f"event: {event}")
         try:
-            # https://medium.com/@rysartem/sending-data-to-splunk-hec-in-a-right-way-4a84af3c44e2
             response = requests.post(
                 url=self.url,
                 headers=self.headers,
-                data=json.dumps(event, ensure_ascii=False).encode("utf-8"),
+                data=payload,
                 verify=self.ssl_verify,
             )
             status = response.status_code
@@ -185,28 +184,16 @@ class Destination:
 
 
 if __name__ == "__main__":
-    import random
-
     from config import destination
 
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
 
-    customers = {0: "slow", 1: "normal", 2: "fast"}
-    # Get random dictionary pair in dictionary
-    # Using random.choice() + list() + items()
-    key, val = random.choice(list(customers.items()))
-
-    # Test data
-    event = {
-        "time": datetime.datetime.now().timestamp(),
-        "event": "Current Time = " + datetime.datetime.now().strftime("%H:%M:%S"),
-        "host": "customer" + str(key),
-        "source": "/opt/splunkforwarder/etc/apps/" + val + "-speed/bin/heure.py",
-        "sourcetype": "heure",
-        "index": "cust" + str(key),
-        "fields": {"cust": val},
-    }
-
-    status = destination.sendEvent(event)
+    payload = """{"time":1701388800,"event":"Current Time = 01:00:00\\n",
+    "host":"uf1","source":"/opt/splunkforwarder/etc/apps/normal/bin/heure.py",
+    "sourcetype":"heure","index":"cust1","fields":{"cust":"customer-normal"}}\n
+    {"time":1701388800,"event":"Current Time = 01:00:00\\n","host":"uf0",
+    "source":"/opt/splunkforwarder/etc/apps/unlimited-speed/bin/heure.py",
+    "sourcetype":"heure","index":"cust0","fields":{"cust":"customer-unlimited"}}\n"""
+    status = destination.sendMultiLines(payload)
     logging.debug(f"Status: {status}")

@@ -33,6 +33,25 @@ services:
         condition: service_healthy
         restart: true
 
+  so1-restore:
+    networks:
+      splunknet:
+      minionet:
+    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
+    platform: linux/amd64
+    hostname: so1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_STANDALONE_URL=so1
+      - SPLUNK_PASSWORD
+      - TZ=${TZ:-Europe/Brussels}
+    ports:
+      - 8100:8000
+      - 8188:8088
+      - 8189:8089
+    volumes:
+      - ./configs/splunk/so1-restore.yml:/tmp/defaults/default.yml
+
   ds1:
     networks:
       splunknet:
