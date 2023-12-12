@@ -26,7 +26,7 @@ and put `private.key` and `public.crt` in `./certs/` directory
 ## Sample generator
 
 ```bash
-echo "Il est: `date`" >> ~splunk/heure.log
+echo "Current Time = `date`" >> ~splunk/heure.log
 ```
 
 ## Ingest Action Ruleset
