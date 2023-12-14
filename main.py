@@ -43,5 +43,5 @@ def restore_objects(
 if __name__ == "__main__":
     # Select a given day
     onThatDay = datetime(2023, 12, 1)
-    # Restore from archive to destination
+    # Restore that day from archive to destination
     restore_objects(onThatDay, archive, destination)
