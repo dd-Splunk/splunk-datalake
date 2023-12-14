@@ -2,7 +2,7 @@ import datetime
 import logging
 import zlib
 from http import HTTPStatus
-from typing import Literal
+from typing import Generator, Literal
 
 import requests
 from minio import Minio
@@ -57,24 +57,29 @@ class Archive:
 
         return prefix
 
-    def list_objects(self, thisday: datetime, sourcetype: str = None):
+    def list_objects(
+        self, thisday: datetime, sourcetype: str = None, recurse: bool = None
+    ) -> Generator:
+        # Recurse by default in case sourcetype is ommitted here
+        # but present in the archived object
+        recurse = recurse if recurse is not None else True
+
         objects = self.client.list_objects(
             bucket_name=self.compliancy_bucket,
             prefix=self.bucket_prefix(thisday, sourcetype),
-            # Recurse in case sourcetype is ommitted but present in archived object
-            recursive=True,
+            recursive=recurse,
         )
         return objects
 
     def get_lines(self, object_name: str) -> bytes:
-        response = self.client.get_object(
+        object = self.client.get_object(
             bucket_name=self.compliancy_bucket, object_name=object_name
         )
-        # Read data from response.
-        items = response.read(decode_content=True)
+        # Read data from object.
+        gzip_content = object.read(decode_content=True)
         # Decode .gz
         # https://stackoverflow.com/questions/1838699/how-can-i-decompress-a-gzip-stream-with-zlib
-        lines = zlib.decompress(items, 15 + 32)
+        lines = zlib.decompress(gzip_content, 15 + 32)
         return lines
 
     @property
@@ -197,4 +202,4 @@ if __name__ == "__main__":
     "source":"/opt/splunkforwarder/etc/apps/unlimited-speed/bin/heure.py",
     "sourcetype":"heure","index":"cust0","fields":{"cust":"customer-unlimited"}}\n"""
     status = destination.sendMultiLines(payload)
-    logging.debug(f"Status: {status}")
+    logging.debug(f"Archive sent status: {status}")
