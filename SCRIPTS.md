@@ -14,7 +14,8 @@ sudo /opt/splunkforwarder/bin/splunk btool limits list thruput --debug
 
 ## Secure Minio
 
-Follow [this](https://min.io/docs/minio/linux/operations/network-encryption.html) setup from Mino docs.
+Follow [this](https://min.io/docs/minio/linux/operations/network-encryption.html)
+setup from Mino docs.
 Use `certgen -host minio` from [CertGen](https://github.com/minio/certgen#install)
 and put `private.key` and `public.crt` in `./certs/` directory
 
