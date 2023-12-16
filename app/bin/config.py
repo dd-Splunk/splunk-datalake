@@ -4,7 +4,7 @@ import sys
 
 from classes import Archive, Destination
 
-config_file = "configs/python/app.ini"
+config_file = "../local/splunk-datalake.conf"
 parser = configparser.ConfigParser()
 try:
     parser.read_file(open(config_file))

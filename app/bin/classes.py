@@ -190,7 +190,7 @@ class Destination:
 
 
 if __name__ == "__main__":
-    from config import destination
+    from app.bin.config import destination
 
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
