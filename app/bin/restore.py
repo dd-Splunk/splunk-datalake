@@ -4,6 +4,11 @@ from datetime import datetime
 
 from classes import Archive, Destination
 from config import archive, destination
+from splunklib import setup_logging
+
+# To see debug and above level logs
+setup_logging(logging.DEBUG)
+
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)

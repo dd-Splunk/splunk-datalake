@@ -6,7 +6,12 @@ from typing import Generator, Literal
 
 import requests
 from minio import Minio
+from splunklib import setup_logging
 
+# To see debug and above level logs
+setup_logging(logging.DEBUG)
+
+# Define typing hints
 Proto = Literal["http", "https"]
 Url = str
 
@@ -190,7 +195,7 @@ class Destination:
 
 
 if __name__ == "__main__":
-    from app.bin.config import destination
+    from config import destination
 
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)

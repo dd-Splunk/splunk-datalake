@@ -3,6 +3,10 @@ import logging
 import sys
 
 from classes import Archive, Destination
+from splunklib import setup_logging
+
+# To see debug and above level logs
+setup_logging(logging.DEBUG)
 
 config_file = "../local/splunk-datalake.conf"
 parser = configparser.ConfigParser()
