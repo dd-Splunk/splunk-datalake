@@ -17,7 +17,7 @@ Proto = Literal["http", "https"]
 Url = str
 
 # Range of acceptable values
-acceptable_ancoding = ["ndjson"]
+acceptable_encoding = ["ndjson"]
 
 
 class Archive:
