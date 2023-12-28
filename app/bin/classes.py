@@ -12,8 +12,12 @@ from splunklib import setup_logging
 setup_logging(logging.DEBUG)
 
 # Define typing hints
+
 Proto = Literal["http", "https"]
 Url = str
+
+# Range of acceptable values
+acceptable_ancoding = ["ndjson"]
 
 
 class Archive:

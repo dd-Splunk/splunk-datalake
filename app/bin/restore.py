@@ -2,7 +2,7 @@ import logging
 import sys
 from datetime import datetime
 
-from classes import Archive, Destination
+from classes import Archive, Destination, acceptable_ancoding
 from config import archive, destination
 from splunklib import setup_logging
 
@@ -15,8 +15,14 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 def restore_objects(
-    onThatDay: datetime, archive: Archive, destination: Destination
+    onThatDay: datetime,
+    archive: Archive,
+    destination: Destination,
+    encoding="ndjson",
 ) -> None:
+    if encoding not in acceptable_ancoding:
+        logging.error(f"Restore from {encoding} encoded archive is not supported!")
+        sys.exit(1)
     if onThatDay > datetime.now():
         logging.error(f"Restoring from {onThatDay} is not allowed")
         sys
