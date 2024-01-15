@@ -39,7 +39,7 @@ services:
       minionet:
     image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
     platform: linux/amd64
-    hostname: so1
+    hostname: so1-restore
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_STANDALONE_URL=so1
