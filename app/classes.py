@@ -41,12 +41,16 @@ class Archive:
         SECTION = "minio"
         self.host = self.config.get(SECTION, "HOST", fallback=self.host)
         self.port = self.config.getint(SECTION, "PORT", fallback=self.port)
+        if self.port < 1 or self.port > 65535:
+            raise ValueError("Invalid port value")
         self.access_key = self.config.get(
             SECTION, "ACCESS_KEY", fallback=self.access_key
         )
         self.secret_key = self.config.get(
             SECTION, "SECRET_KEY", fallback=self.secret_key
         )
+        if not self.secret_key:
+            raise ValueError("Missing SECRET KEY")
         self.compliancy_bucket = self.config.get(
             SECTION, "COMPLIANCY_BUCKET", fallback=self.compliancy_bucket
         )
@@ -147,7 +151,11 @@ class Destination:
         SECTION = "splunk"
         self.host = self.config.get(SECTION, "HOST", fallback=self.host)
         self.port = self.config.getint(SECTION, "PORT", fallback=self.port)
+        if self.port < 1 or self.port > 65535:
+            raise ValueError("Invalid port value")
         self.token = self.config.get(SECTION, "TOKEN", fallback=self.token)
+        if not self.token:
+            raise ValueError("Missing TOKEN")
         self.proto = self.config.get(SECTION, "PROTO", fallback=self.proto)
         self.ssl_verify = self.config.getboolean(
             SECTION, "SSL_VERIFY", fallback=self.ssl_verify
