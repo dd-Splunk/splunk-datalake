@@ -1,7 +1,21 @@
+[project]
+name = "Splunk-DataLake"
+dynamic = ["version"]
+dependencies = [
+"configparser",
+"jsonlines",
+"minio",
+"pre-commit",
+"requests",
+"splunk-sdk",
+"urllib3",
+]
+
+[tool.setuptools.packages.find]
+where = ["app"]
+
 [tool.black]
 line-length = 88
-
-
 
 [tool.isort]
 line_length = 88

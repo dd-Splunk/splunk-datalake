@@ -2,8 +2,8 @@ import logging
 import sys
 from datetime import datetime
 
-from classes import Archive, Destination
-from config import archive, destination
+from .classes import Archive, Destination
+from .config import archive, destination
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
