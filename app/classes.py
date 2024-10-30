@@ -50,7 +50,7 @@ class Archive:
         self.compliancy_bucket = self.config.get(
             SECTION, "COMPLIANCY_BUCKET", fallback=self.compliancy_bucket
         )
-        self.ssl_verify = self.config.get(
+        self.ssl_verify = self.config.getboolean(
             SECTION, "SSL_VERIFY", fallback=self.ssl_verify
         )
 
@@ -149,7 +149,7 @@ class Destination:
         self.port = self.config.getint(SECTION, "PORT", fallback=self.port)
         self.token = self.config.get(SECTION, "TOKEN", fallback=self.token)
         self.proto = self.config.get(SECTION, "PROTO", fallback=self.proto)
-        self.ssl_verify = self.config.get(
+        self.ssl_verify = self.config.getboolean(
             SECTION, "SSL_VERIFY", fallback=self.ssl_verify
         )
 
