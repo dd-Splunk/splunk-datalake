@@ -6,7 +6,7 @@ from .classes import Archive, Destination
 from .config import archive, destination
 
 logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 def restore_objects(

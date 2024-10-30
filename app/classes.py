@@ -1,3 +1,4 @@
+import configparser
 import logging
 import zlib
 from dataclasses import dataclass, field
@@ -14,17 +15,20 @@ from minio import Minio
 Proto = Literal["http", "https"]
 Url = str
 
+logging.basicConfig(level=logging.INFO)
+
 
 @dataclass
 class Archive:
     """Client for interacting with MinIO archive storage."""
 
-    host: str
-    port: int
-    access_key: str
-    secret_key: str = field(repr=False)  # Excluded from repr
-    compliancy_bucket: str
-    ssl_verify: bool
+    config: configparser.ConfigParser
+    host: str = field(default="localhost")
+    port: int = field(default=9000)
+    access_key: str = field(default="admin")
+    secret_key: str = field(default="", repr=False)  # Excluded from repr
+    compliancy_bucket: str = field(default="compliancy-bucket")
+    ssl_verify: bool = field(default=False)
 
     # Initialize logger using class attribute
     logger: logging.Logger = field(
@@ -33,7 +37,23 @@ class Archive:
 
     def __post_init__(self) -> None:
         """Initialize MinIO client after dataclass initialization."""
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
+        SECTION = "minio"
+        self.host = self.config.get(SECTION, "HOST", fallback=self.host)
+        self.port = self.config.getint(SECTION, "PORT", fallback=self.port)
+        self.access_key = self.config.get(
+            SECTION, "ACCESS_KEY", fallback=self.access_key
+        )
+        self.secret_key = self.config.get(
+            SECTION, "SECRET_KEY", fallback=self.secret_key
+        )
+        self.compliancy_bucket = self.config.get(
+            SECTION, "COMPLIANCY_BUCKET", fallback=self.compliancy_bucket
+        )
+        self.ssl_verify = self.config.get(
+            SECTION, "SSL_VERIFY", fallback=self.ssl_verify
+        )
+
         self.client = Minio(
             endpoint=f"{self.host}:{self.port}",
             access_key=self.access_key,
@@ -109,11 +129,12 @@ class Archive:
 class Destination:
     """Client for sending data to HTTP Event Collector."""
 
-    host: str
-    port: int
-    token: str = field(repr=False)
-    proto: Proto
-    ssl_verify: bool
+    config: configparser.ConfigParser
+    host: str = field(default="localhost")
+    port: int = field(default=8088)
+    token: str = field(default="", repr=False)
+    proto: Proto = field(default="https")
+    ssl_verify: bool = field(default=False)
 
     logger: logging.Logger = field(
         default_factory=lambda: logging.getLogger("HEC"), init=False
@@ -122,6 +143,15 @@ class Destination:
     def __post_init__(self) -> None:
         """Set up logging after dataclass initialization."""
         self.logger.setLevel(logging.INFO)
+
+        SECTION = "splunk"
+        self.host = self.config.get(SECTION, "HOST", fallback=self.host)
+        self.port = self.config.getint(SECTION, "PORT", fallback=self.port)
+        self.token = self.config.get(SECTION, "TOKEN", fallback=self.token)
+        self.proto = self.config.get(SECTION, "PROTO", fallback=self.proto)
+        self.ssl_verify = self.config.get(
+            SECTION, "SSL_VERIFY", fallback=self.ssl_verify
+        )
 
     @cached_property
     def url(self) -> Url:
@@ -174,8 +204,6 @@ class Destination:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-
     from .config import destination
 
     test_payload = """
@@ -189,4 +217,4 @@ if __name__ == "__main__":
     """.strip()
 
     status = destination.send_multilines(test_payload)
-    logging.debug("Archive sent status: %s", status)
+    logging.info("Archive sent status: %s", status)
